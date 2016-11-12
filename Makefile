@@ -1,3 +1,11 @@
+#
+# Makefile for the RogueGame
+#
+# Created by Gus Oberdick (Nov. 12 3:33pm)
+# Last modified by (___)
+#
+
+
 # Where to find the include files
 INCS = -I/usr/local/include/
 
