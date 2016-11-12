@@ -5,16 +5,15 @@ INCS = -I/usr/local/include/
 GCC_OPTIONS= -pedantic -g
 
 # What libraries to link GLU is included for backwards compatibility
-LFLIB = -lGL -lGLU -lglfw3 -lX11 -lXxf86vm -lXrandr -lpthread -lXi /usr/lib/x86_64-linux-gnu/libGLEW.so.1.13
+# LDLIBS = /usr/lib/x86_64-linux-gnu/libGLEW.so.1.13 -lglfw3 -lGL -lm -lXrandr -lXi -lX11 -lXxf86vm -lpthread
+LDLIBS = /usr/lib/x86_64-linux-gnu/libGLEW.so.1.13 -lglfw3 -lGL -lm -ldl -lXinerama -lXrandr -lXi -lXcursor -lX11 -lXxf86vm -lpthread
+#LDLIBS = /usr/lib/x86_64-linux-gnu/libGLEW.so.1.13 -lglfw3 -lX11 -lXrandr -lXinerama -lXi -lXxf86vm -lXcursor -lGL -lpthread -lpthread -lm -lrt -ldl
 
 # Options parameter to pass to the compiler
 OPTIONS = $(GCC_OPTIONS) $(INCS)
 
-all: main.o
-	g++ main.o $(OPTIONS) $(LDLIBS) -o main
-
-main.o:
-	g++ -std=c++11 -c main.cpp
+all:
+	 g++ `pkg-config --cflags glfw3` -o main main.cpp $(OPTIONS) $(LDLIBS) `pkg-config --static --libs glfw3`
 
 clean:
 	rm main *.o
