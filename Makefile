@@ -12,8 +12,15 @@ LDLIBS = /usr/lib/x86_64-linux-gnu/libGLEW.so.1.13 -lglfw3 -lGL -lm -ldl -lXiner
 # Options parameter to pass to the compiler
 OPTIONS = $(GCC_OPTIONS) $(INCS)
 
-all:
-	 g++ `pkg-config --cflags glfw3` -o main main.cpp $(OPTIONS) $(LDLIBS) `pkg-config --static --libs glfw3`
+CC = g++ -std=c++11
+
+all: game
+
+game: main.cpp window.o
+	$(CC) main.cpp window.o $(OPTIONS) $(LDLIBS) `pkg-config --cflags glfw3` -o game `pkg-config --static --libs glfw3`
+
+window.o: src/window.h src/window.cpp
+	$(CC) src/window.cpp -c $(OPTIONS)
 
 clean:
-	rm main *.o
+	rm game *.o
