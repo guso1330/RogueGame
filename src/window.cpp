@@ -24,8 +24,19 @@ bool Window::init() {
 		std::cout << "Failed to create GLFW window" << std::endl;
 		return false;
 	}
-	
+	// Create the GLFW context for the window
 	glfwMakeContextCurrent(m_Window); // Set the window context
+	glfwSetWindowSizeCallback(m_Window, windowResize);
+
+
+	// Initialize GLEW
+	if(glewInit() != GLEW_OK) {
+		std::cout << "GLEW failed to initialize!" << std::endl;
+		return false;
+	}
+
+	std::cout << "OpenGL " << glGetString(GL_VERSION) << std::endl;
+	
 	return true;
 }
 
@@ -34,12 +45,20 @@ Window::~Window() {
 }
 
 bool Window::Closed() const {
-	return glfwWindowShouldClose(m_Window);
+	return glfwWindowShouldClose(m_Window) == 1;
 }
 
-void Window::Update() const {
-	glClearColor(0.0f, 0.0f, 0.0f,1.0f);
-	glClear(GL_COLOR_BUFFER_BIT);
-	glfwSwapBuffers(m_Window);
+void Window::Clear() const {
+	glClearColor(0.0f, 0.2f, 0.2f,1.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+}
+
+void Window::Update() {
 	glfwPollEvents(); // pull the events
+	glfwSwapBuffers(m_Window);
+}
+
+void windowResize(GLFWwindow *window, int width, int height) {
+	// Does not respect aspect ratio right this moment
+	glViewport(0, 0, width, height); // Does not resize the m_Width and m_Height properties
 }
