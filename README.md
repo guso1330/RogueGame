@@ -1,4 +1,2 @@
-# RogueGame
-A GLFW/opengl game made for a final project in CS4250: Interactive Computer Graphics at Ohio University (Fall 2016), taught by David Chelberg.
-
-Need to install GLFW on ubuntu
+# HauntedHouse
+My first 3D "game". It is a game where you're trapped in a haunted house and you must find you way out.

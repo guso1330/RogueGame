@@ -1,34 +1,44 @@
+# This sample Makefile allows you to make an OpenGL application
+#   whose source is exactly one .c file or one .cc file under Solaris.
+#   check the location of the X libraries on your implementation.
 #
-# Makefile for the RogueGame
+# To use this Makefile, you type:
 #
-# Created by Gus Oberdick (Nov. 12 3:33pm)
-# Last modified by (___)
+#        make xxxx
+#                  
+# where
+#       xxxx.cc is the name of the c++-file you wish to compile 
+#  or 
+#       xxxx.c is the name of the c-file you wish to compile 
+#       
+# A binary named xxxx will be produced
+# Libraries are assumed to be in the default search paths
+# as are any required include files
+
 #
+# Modified by Prof. Chelberg to also allow you to make from a single
+# c++ source file.  So if xxxx.cc is the sourcefile, you type make
+# xxxx to produce the binary file.
 
+# last-modified: Mon Sep 17 15:17:00 2012
 
-# Where to find the include files
-INCS = -I/usr/local/include/
+# Assumes the following file exists in the proper place.
+include /home/guso/Documents/cs4250/code-egs/Makefile.defs
 
-# Compiler options -g for debug info
-GCC_OPTIONS= -pedantic -g
+# The first item in the file is what will be made if you just type
+# make (i.e. with no arguments).
+all: rogueGame
+	
+rogueGame: rogueGame.cc mesh.o objloader.o
+	$(CC) rogueGame.cc $(InitShader) objloader.o mesh.o $(OPTIONS) $(LDLIBS) -o rogueGame
 
-# What libraries to link GLU is included for backwards compatibility
-# LDLIBS = /usr/lib/x86_64-linux-gnu/libGLEW.so.1.13 -lglfw3 -lGL -lm -lXrandr -lXi -lX11 -lXxf86vm -lpthread
-LDLIBS = /usr/lib/x86_64-linux-gnu/libGLEW.so.1.13 -lglfw3 -lGL -lm -ldl -lXinerama -lXrandr -lXi -lXcursor -lX11 -lXxf86vm -lpthread
-#LDLIBS = /usr/lib/x86_64-linux-gnu/libGLEW.so.1.13 -lglfw3 -lX11 -lXrandr -lXinerama -lXi -lXxf86vm -lXcursor -lGL -lpthread -lpthread -lm -lrt -ldl
+mesh.o: src/mesh.h src/mesh.cc
+	$(CC) src/mesh.cc -c $(OPTIONS)
 
-# Options parameter to pass to the compiler
-OPTIONS = $(GCC_OPTIONS) $(INCS)
+objloader.o: src/objloader.h src/objloader.cc
+	$(CC) src/objloader.cc -c $(OPTIONS)
 
-CC = g++ -std=c++11
-
-all: game
-
-game: main.cpp window.o
-	$(CC) main.cpp window.o $(OPTIONS) $(LDLIBS) `pkg-config --cflags glfw3` -o game `pkg-config --static --libs glfw3`
-
-window.o: src/window.h src/window.cpp
-	$(CC) src/window.cpp -c $(OPTIONS)
-
-clean:
-	rm game *.o
+	
+# pattern to clean the directory
+clean: 
+	rm -f rogueGame objloader.o
