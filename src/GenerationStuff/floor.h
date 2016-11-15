@@ -24,4 +24,5 @@ private:
 	void place_room_spawners();
 	void connect_rooms(int room_1_x, int room_1_y, int room_2_x, int room_2_y);
 	void save_floor(string file_name);
+	void generate_room(int x, int y);
 };

@@ -25,7 +25,7 @@ void floor::calculate_room_spawners()
 
 void floor::calculate_max_room_size()
 {
-	max_room_size = total_blocks * ROOM_SIZE_SCALE;
+	max_room_size = total_blocks * ROOM_SIZE_SCALE + 1;
 	std::cout << "Max Room Size = " << max_room_size << std::endl;
 }
 
@@ -55,7 +55,7 @@ void floor::connect_rooms(int x1, int y1, int x2, int y2)
 	{
 		//set to floor
 		std::cout <<"setting [" << hallway_x << "][" << y1 << "] to floor"<< std::endl;
-		if(floor_map[hallway_x][y1].get_block_id() != 1)
+		if(floor_map[hallway_x][y1].get_block_id() != 3)
 			floor_map[hallway_x][y1].set_block_id(2);
 	}
 
@@ -72,9 +72,29 @@ void floor::connect_rooms(int x1, int y1, int x2, int y2)
 	for(;hallway_y < hallway_y_end; ++hallway_y)
 	{
 		std::cout <<"setting [" << hallway_y << "][" << x1 << "] to floor"<< std::endl;
-		if(floor_map[x2][hallway_y].get_block_id() != 1)
+		if(floor_map[x2][hallway_y].get_block_id() != 3)
 			floor_map[x2][hallway_y].set_block_id(2);
 	}
+}
+
+void floor::generate_room(int x, int y)
+{
+	//size of this room
+	int this_room_size;
+	this_room_size = rand() % (max_room_size - 1) + 1;
+	for(int x_counter = x - this_room_size; x_counter < (x+this_room_size); ++x_counter)
+	{
+		for(int y_counter = y - this_room_size ; y_counter < (y + this_room_size); ++y_counter)
+		{
+			//make sure its in playable bounds
+			if((x_counter > 0)&&(x_counter < x_dim)){
+				if((y_counter > 0)&&(y_counter < y_dim)){
+					floor_map[x_counter][y_counter].set_block_id(3);
+				}
+			}
+		}
+	}
+
 }
 
 void floor::place_room_spawners()
@@ -95,6 +115,7 @@ void floor::place_room_spawners()
 		<< room_x << "," << room_y << "). " << std::endl;
 		floor_map[room_x][room_y].set_block_id(1); 
 		std::cout << "floor_map[" << room_x << "][" << room_y << "] set to spawner block." << std::endl;
+		generate_room(room_x, room_y);
 		if(room_counter > 0){
 			std::cout << "Connecting room #" << room_counter-1 << " to #" << room_counter << ". " << std::endl;
 			std::cout << "Last room at [" << last_room_x << "][" << last_room_y << "] to";
@@ -130,6 +151,9 @@ void floor::save_floor(string name)
 					break;
 				case 2:
 					myFile << "*";
+					break;
+				case 3:
+					myFile << "#";
 					break;
 
 			}
