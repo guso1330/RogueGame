@@ -1,0 +1,10 @@
+#!/bin/bash
+COUNTER=0
+while [ $COUNTER -lt 10 ]; do
+	echo Demo number $COUNTER
+	let COUNTER+=1
+	./a.out
+	gedit output.txt &
+	sleep 3
+	pkill gedit
+done
