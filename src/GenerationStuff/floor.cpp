@@ -1,10 +1,11 @@
 #include "floor.h"
 #include <iostream>
 #include <fstream>
-#define SPAWNER_DENOM 65
-#define DIM_SLACK 35
-#define DIM_MIN 15
+#define SPAWNER_DENOM 95 //was 65
+#define DIM_SLACK 30 //was 35
+#define DIM_MIN 20  //was 15
 #define ROOM_SIZE_SCALE .00125
+#define ROOM_SPAWNER_PADDING 4
 void floor::generate_dims()
 {
 	srand(time(NULL));
@@ -109,8 +110,27 @@ void floor::place_room_spawners()
 			last_room_x = room_x;
 			last_room_y = room_y;
 		}
+		//room_x = rand() % x_dim;
+		//room_y = rand() % y_dim;
 		room_x = rand() % x_dim;
+		//replace if it falls into the padded zone.
+		if(room_x < (ROOM_SPAWNER_PADDING))
+		{
+			room_x = room_x + ROOM_SPAWNER_PADDING;
+		}
+		if(room_x > (x_dim - ROOM_SPAWNER_PADDING))
+		{
+			room_x = room_x - ROOM_SPAWNER_PADDING;
+		}
 		room_y = rand() % y_dim;
+		if(room_y < (ROOM_SPAWNER_PADDING))
+		{
+			room_y = room_y + ROOM_SPAWNER_PADDING;
+		}
+		if(room_y > (y_dim - ROOM_SPAWNER_PADDING))
+		{
+			room_y = room_y - ROOM_SPAWNER_PADDING;
+		}
 		//std::cout << "Room #" << room_counter << " placed at ("
 		//<< room_x << "," << room_y << "). " << std::endl;
 		floor_map[room_x][room_y].set_block_id(1); 
@@ -144,13 +164,13 @@ void floor::save_floor(string name)
 			switch(cur_id)
 			{
 				case 0:
-					myFile << " ";
+					myFile << "~";
 					break;
 				case 1: 
 					myFile << "R";
 					break;
 				case 2:
-					myFile << "*";
+					myFile << "#";
 					break;
 				case 3:
 					myFile << "#";
