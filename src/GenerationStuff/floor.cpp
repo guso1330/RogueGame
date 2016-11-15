@@ -2,9 +2,9 @@
 #include <iostream>
 #include <fstream>
 #define SPAWNER_DENOM 65
-#define DIM_SLACK 25
+#define DIM_SLACK 35
 #define DIM_MIN 15
-#define ROOM_SIZE_SCALE .005
+#define ROOM_SIZE_SCALE .00125
 void floor::generate_dims()
 {
 	srand(time(NULL));
@@ -25,7 +25,7 @@ void floor::calculate_room_spawners()
 
 void floor::calculate_max_room_size()
 {
-	max_room_size = total_blocks * ROOM_SIZE_SCALE + 1;
+	max_room_size = total_blocks * ROOM_SIZE_SCALE + 2;
 	std::cout << "Max Room Size = " << max_room_size << std::endl;
 }
 
@@ -50,11 +50,11 @@ void floor::connect_rooms(int x1, int y1, int x2, int y2)
 		hallway_x_end = x1;
 	}
 	//generate horizontal hallway segment
-	std::cout << "X-Hallway Generation." << std::endl;
+	//std::cout << "X-Hallway Generation." << std::endl;
 	for(;hallway_x < hallway_x_end; ++hallway_x)
 	{
 		//set to floor
-		std::cout <<"setting [" << hallway_x << "][" << y1 << "] to floor"<< std::endl;
+		//std::cout <<"setting [" << hallway_x << "][" << y1 << "] to floor"<< std::endl;
 		if(floor_map[hallway_x][y1].get_block_id() != 3)
 			floor_map[hallway_x][y1].set_block_id(2);
 	}
@@ -68,10 +68,10 @@ void floor::connect_rooms(int x1, int y1, int x2, int y2)
 		hallway_y = y2;
 		hallway_y_end = y1;
 	}
-	std::cout << "Y-Hallway Generation." << std::endl;
+	//std::cout << "Y-Hallway Generation." << std::endl;
 	for(;hallway_y < hallway_y_end; ++hallway_y)
 	{
-		std::cout <<"setting [" << hallway_y << "][" << x1 << "] to floor"<< std::endl;
+		//std::cout <<"setting [" << hallway_y << "][" << x1 << "] to floor"<< std::endl;
 		if(floor_map[x2][hallway_y].get_block_id() != 3)
 			floor_map[x2][hallway_y].set_block_id(2);
 	}
@@ -111,15 +111,15 @@ void floor::place_room_spawners()
 		}
 		room_x = rand() % x_dim;
 		room_y = rand() % y_dim;
-		std::cout << "Room #" << room_counter << " placed at ("
-		<< room_x << "," << room_y << "). " << std::endl;
+		//std::cout << "Room #" << room_counter << " placed at ("
+		//<< room_x << "," << room_y << "). " << std::endl;
 		floor_map[room_x][room_y].set_block_id(1); 
-		std::cout << "floor_map[" << room_x << "][" << room_y << "] set to spawner block." << std::endl;
+		//std::cout << "floor_map[" << room_x << "][" << room_y << "] set to spawner block." << std::endl;
 		generate_room(room_x, room_y);
 		if(room_counter > 0){
-			std::cout << "Connecting room #" << room_counter-1 << " to #" << room_counter << ". " << std::endl;
-			std::cout << "Last room at [" << last_room_x << "][" << last_room_y << "] to";
-			std::cout << "current room at [" << room_x << "][" << room_y << "]." << std::endl;
+			//std::cout << "Connecting room #" << room_counter-1 << " to #" << room_counter << ". " << std::endl;
+			//std::cout << "Last room at [" << last_room_x << "][" << last_room_y << "] to";
+			//std::cout << "current room at [" << room_x << "][" << room_y << "]." << std::endl;
 				connect_rooms(last_room_x, last_room_y, room_x, room_y);
 
 		}
