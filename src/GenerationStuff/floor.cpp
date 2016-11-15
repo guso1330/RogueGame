@@ -164,7 +164,7 @@ void floor::save_floor(string name)
 			switch(cur_id)
 			{
 				case 0:
-					myFile << "~";
+					myFile << " ";
 					break;
 				case 1: 
 					myFile << "R";
@@ -173,7 +173,7 @@ void floor::save_floor(string name)
 					myFile << "#";
 					break;
 				case 3:
-					myFile << "#";
+					myFile << "█";
 					break;
 
 			}
