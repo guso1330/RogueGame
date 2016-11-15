@@ -1,6 +1,7 @@
 #include <vector>
 #include <ctime>
 #include <cstdlib>
+#include <string> 
 #include "block.h"
 using namespace std;
 class floor {
@@ -22,4 +23,5 @@ private:
 	void resize_floor_map();
 	void place_room_spawners();
 	void connect_rooms(int room_1_x, int room_1_y, int room_2_x, int room_2_y);
+	void save_floor(string file_name);
 };

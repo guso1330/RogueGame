@@ -1,5 +1,6 @@
 #include "floor.h"
 #include <iostream>
+#include <fstream>
 #define SPAWNER_DENOM 65
 #define DIM_SLACK 25
 #define DIM_MIN 15
@@ -54,7 +55,8 @@ void floor::connect_rooms(int x1, int y1, int x2, int y2)
 	{
 		//set to floor
 		std::cout <<"setting [" << hallway_x << "][" << y1 << "] to floor"<< std::endl;
-		floor_map[hallway_x][y1].set_block_id(2);
+		if(floor_map[hallway_x][y1].get_block_id() != 1)
+			floor_map[hallway_x][y1].set_block_id(2);
 	}
 
 	//determine bottom most room
@@ -70,7 +72,8 @@ void floor::connect_rooms(int x1, int y1, int x2, int y2)
 	for(;hallway_y < hallway_y_end; ++hallway_y)
 	{
 		std::cout <<"setting [" << hallway_y << "][" << x1 << "] to floor"<< std::endl;
-		floor_map[x1][hallway_y].set_block_id(2);
+		if(floor_map[x2][hallway_y].get_block_id() != 1)
+			floor_map[x2][hallway_y].set_block_id(2);
 	}
 }
 
@@ -103,6 +106,41 @@ void floor::place_room_spawners()
 
 }
 
+void floor::save_floor(string name)
+{
+	ofstream myFile;
+	myFile.open("output.txt");
+	
+	 
+
+	for(int i = 0; i < y_dim; i++)
+	{
+		for(int j = 0; j < x_dim; j++)
+		{
+			int cur_id; 
+			cur_id = floor_map[j][i].get_block_id();
+			
+			switch(cur_id)
+			{
+				case 0:
+					myFile << " ";
+					break;
+				case 1: 
+					myFile << "R";
+					break;
+				case 2:
+					myFile << "*";
+					break;
+
+			}
+			//myFile << floor_map[j][i].get_block_id();
+		}
+		myFile << "\n";
+	}
+	myFile.close();
+}
+
+
 floor::floor()
 {
 	generate_dims();
@@ -110,4 +148,5 @@ floor::floor()
 	calculate_max_room_size();
 	resize_floor_map();
 	place_room_spawners();
+	save_floor("output");
 }
