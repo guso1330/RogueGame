@@ -52,7 +52,7 @@ void floor::connect_rooms(int x1, int y1, int x2, int y2)
 	}
 	//generate horizontal hallway segment
 	//std::cout << "X-Hallway Generation." << std::endl;
-	for(;hallway_x < hallway_x_end; ++hallway_x)
+	for(;hallway_x <= hallway_x_end; ++hallway_x)
 	{
 		//set to floor
 		//std::cout <<"setting [" << hallway_x << "][" << y1 << "] to floor"<< std::endl;
@@ -170,7 +170,7 @@ void floor::save_floor(string name)
 					myFile << "R";
 					break;
 				case 2:
-					myFile << "#";
+					myFile << "░";
 					break;
 				case 3:
 					myFile << "█";
