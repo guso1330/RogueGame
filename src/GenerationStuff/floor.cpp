@@ -1,6 +1,7 @@
 #include "floor.h"
 #include <iostream>
 #include <fstream>
+#include <utility>
 #define SPAWNER_DENOM 95 //was 65
 #define DIM_SLACK 30 //was 35
 #define DIM_MIN 20  //was 15
@@ -57,7 +58,8 @@ void floor::connect_rooms(int x1, int y1, int x2, int y2)
 		//set to floor
 		//std::cout <<"setting [" << hallway_x << "][" << y1 << "] to floor"<< std::endl;
 		if(floor_map[hallway_x][y1].get_block_id() != 3)
-			floor_map[hallway_x][y1].set_block_id(2);
+			if(floor_map[hallway_x][y1].get_block_id() != 1)
+				floor_map[hallway_x][y1].set_block_id(2);
 	}
 
 	//determine bottom most room
@@ -74,7 +76,8 @@ void floor::connect_rooms(int x1, int y1, int x2, int y2)
 	{
 		//std::cout <<"setting [" << hallway_y << "][" << x1 << "] to floor"<< std::endl;
 		if(floor_map[x2][hallway_y].get_block_id() != 3)
-			floor_map[x2][hallway_y].set_block_id(2);
+			if(floor_map[x2][hallway_y].get_block_id() != 1)
+				floor_map[x2][hallway_y].set_block_id(2);
 	}
 }
 
@@ -90,7 +93,8 @@ void floor::generate_room(int x, int y)
 			//make sure its in playable bounds
 			if((x_counter > 0)&&(x_counter < x_dim)){
 				if((y_counter > 0)&&(y_counter < y_dim)){
-					floor_map[x_counter][y_counter].set_block_id(3);
+					if(floor_map[x_counter][y_counter].get_block_id() != 1)
+						floor_map[x_counter][y_counter].set_block_id(3);
 				}
 			}
 		}
@@ -164,10 +168,10 @@ void floor::save_floor(string name)
 			switch(cur_id)
 			{
 				case 0:
-					myFile << " ";
+					myFile << "▓";
 					break;
 				case 1: 
-					myFile << "R";
+					myFile << "⧫";
 					break;
 				case 2:
 					myFile << "░";
@@ -175,7 +179,12 @@ void floor::save_floor(string name)
 				case 3:
 					myFile << "█";
 					break;
-
+				case 10:
+					myFile << "S";
+					break;
+				case 11:
+					myFile << "E";
+					break;
 			}
 			//myFile << floor_map[j][i].get_block_id();
 		}
@@ -184,7 +193,39 @@ void floor::save_floor(string name)
 	myFile.close();
 }
 
+void floor::generate_stairs()
+{
+	//find room generator nodes
+	vector<int> x_vec;
+	vector<int> y_vec;
 
+	for(int i = 0; i < x_dim; ++i)
+	{
+		for(int j = 0; j < y_dim; ++j)
+		{
+			if(floor_map[i][j].get_block_id() == 1)
+			{
+				x_vec.push_back(i);
+				y_vec.push_back(j);
+			}
+		}
+	}
+
+	int size; 
+	size = x_vec.size();
+	int start_stair;
+	int end_stair; 
+	start_stair = rand() % size;
+	end_stair = rand() % size;
+	while(start_stair == end_stair)
+		end_stair = rand() % size;
+	//place entry stairs
+
+	floor_map[x_vec[start_stair]][y_vec[start_stair]].set_block_id(10);
+
+	//place exit stairs
+	floor_map[x_vec[end_stair]][y_vec[end_stair]].set_block_id(11);
+}
 floor::floor()
 {
 	generate_dims();
@@ -192,5 +233,6 @@ floor::floor()
 	calculate_max_room_size();
 	resize_floor_map();
 	place_room_spawners();
+	generate_stairs();
 	save_floor("output");
 }

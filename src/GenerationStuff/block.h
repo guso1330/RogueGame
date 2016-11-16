@@ -12,7 +12,8 @@
 |*				4 = Wood Wall
 |*				5 = Stone Wall
 |*				6 = Tile Wall
-|*				10 = 
+|*				10 = Entry Stairs
+|* 				11 = Exit Stairs
 |*		Block Content IDs: 
 |*				0 = Empty
 |*				1 = Table
