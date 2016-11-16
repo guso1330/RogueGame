@@ -40,7 +40,7 @@ typedef Angel::vec4 color4;
 //
 
 // OBJECTS IN SCENE
-// Mesh Cube("models/cube.obj");
+Mesh Cube("models/cube.obj");
 // Mesh Pipe("models/pipe.obj");
 
 // Window dimension constants
@@ -131,10 +131,10 @@ extern "C" void key(unsigned char k, int nx, int ny) {
 			camera.MoveRight(camera_speed);
 			break;
 		case 'r':
-			camera.RotateYaw(-0.02);
+			camera.RotateYaw(-0.5);
 			break;
 		case 'e':
-			camera.RotateYaw(0.02);
+			camera.RotateYaw(0.5);
 			break;
 
 		default:
@@ -196,10 +196,9 @@ void init() {
 	GLuint buffer;
 	glGenBuffers(1, &buffer);
 	glBindBuffer(GL_ARRAY_BUFFER, buffer);
-	glBufferData(GL_ARRAY_BUFFER, vertices.size()*sizeof(vec4), &vertices[0], GL_STATIC_DRAW);
 
-	// glBindBuffer(GL_ARRAY_BUFFER, buffer[1]);
-	// glBufferData(GL_ARRAY_BUFFER, Pipe.GetVertices().size()*sizeof(vec4), &Pipe.GetVertices()[0], GL_STATIC_DRAW);
+	// Cube data
+	glBufferData(GL_ARRAY_BUFFER, vertices.size()*sizeof(vec4), &vertices[0], GL_STATIC_DRAW);
 
 	glEnableVertexAttribArray(loc);
 	glVertexAttribPointer(loc, 4, GL_FLOAT, GL_FALSE, 0, 0);
@@ -220,7 +219,7 @@ int main(int argc, char **argv) {
 
 	glutInit(&argc, argv);
 
-	load_obj("models/pipe.obj", vertices, uvs, normals);
+	// load_obj("models/pipe.obj", vertices, uvs, normals);
 	
 	// Initializes the GLUT and callbacks 
 	GLUTinit();
