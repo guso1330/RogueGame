@@ -29,11 +29,14 @@ include /home/guso/Documents/cs4250/code-egs/Makefile.defs
 # make (i.e. with no arguments).
 all: rogueGame
 	
-rogueGame: rogueGame.cc mesh.o objloader.o
-	$(CC) rogueGame.cc $(InitShader) objloader.o mesh.o $(OPTIONS) $(LDLIBS) -o rogueGame
+rogueGame: rogueGame.cc mesh.o camera.o objloader.o
+	$(CC) rogueGame.cc $(InitShader) objloader.o camera.o mesh.o $(OPTIONS) $(LDLIBS) -o rogueGame
 
 mesh.o: src/mesh.h src/mesh.cc
 	$(CC) src/mesh.cc -c $(OPTIONS)
+
+camera.o: src/camera.h src/camera.cc
+	$(CC) src/camera.cc -c $(OPTIONS)
 
 objloader.o: src/objloader.h src/objloader.cc
 	$(CC) src/objloader.cc -c $(OPTIONS)
@@ -41,4 +44,4 @@ objloader.o: src/objloader.h src/objloader.cc
 	
 # pattern to clean the directory
 clean: 
-	rm -f rogueGame objloader.o
+	rm -f rogueGame *.o

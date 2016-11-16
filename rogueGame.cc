@@ -131,10 +131,10 @@ extern "C" void key(unsigned char k, int nx, int ny) {
 			camera.MoveRight(camera_speed);
 			break;
 		case 'r':
-			camera.Rotate(-5.0);
+			camera.RotateYaw(-0.02);
 			break;
 		case 'e':
-			camera.Rotate(5.0);
+			camera.RotateYaw(0.02);
 			break;
 
 		default:
