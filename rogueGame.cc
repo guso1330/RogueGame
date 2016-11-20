@@ -30,6 +30,7 @@
 #include "src/object.h"
 #include "src/camera.h"
 #include "src/utilities.h"
+#include "src/GenerationStuff/floor.h"
 
 using namespace std;
 
@@ -42,6 +43,8 @@ typedef Angel::vec4 color4;
 
 // OBJECTS IN SCENE
 Object *Cube;
+Floor lvl_floor;
+float fx=0.0, fz=0.0;
 
 // Window dimension constants
 int WIN_W = 1024;
@@ -49,6 +52,7 @@ int WIN_H = 768;
 
 // Array for keyboard values
 bool key[255];
+bool DEBUG_CAM = false;
 
 // Array of rotation angles (in degrees) for each coordinate axis
 enum {Xaxis = 0, Yaxis = 1, Zaxis = 2, NumAxes = 3};
@@ -72,7 +76,7 @@ mat4 projection;
 // Initialize the camera
 Camera camera(vec4(0.0f, 0.0f, -2.0f, 0.0f), 70.0f, (float)WIN_W/(float)WIN_H, 0.1f, 100.0f);
 float camera_speed = 0.5f;
-float camera_rotate_speed = (M_PI/180) * 2.5;
+float camera_rotate_speed = (M_PI/180) * 0.5;
 
 //
 // CALLBACKS
@@ -92,7 +96,25 @@ extern "C" void display() {
 	//
 	// DRAWING
 	//
-	Cube->DrawWireframe();
+	// Cube->DrawWireframe();
+	// RENDER THE LEVEL
+	for(int i=0; i < lvl_floor.floor_map.size(); ++i) {
+		for(int j=0; j < lvl_floor.floor_map[i].size(); ++j) {
+			Cube->Move(fx, 0.0, fz);
+			block t_block = lvl_floor.floor_map[i][j];
+			if(t_block.get_block_id() != 0) {
+				
+			} else {
+				// Cube->SetColor(1.0, 0.0, 0.0);
+				Cube->DrawWireframe();
+			}
+			fx += 1.0;
+		}
+		fz += 1.0;
+		fx = 0.0;
+	}
+
+	fz = 0.0;	
 
 	glutSwapBuffers();
 }
@@ -105,7 +127,10 @@ extern "C" void keyDown(unsigned char k, int nx, int ny) {
 		case 27: // Exit program case
 			exit(0);
 			break;
-
+		case 't':
+		case 'T':
+			DEBUG_CAM = !DEBUG_CAM;
+			break;
 		default:
 			break;
 	}
@@ -141,6 +166,33 @@ extern "C" void idle()
 	glutPostRedisplay();
 }
 
+extern "C" void motion(int x, int y) {
+	static bool just_warped = false;
+
+	// cout << x << ", " << y << endl;
+
+	if(just_warped) {
+		just_warped = false;
+		return;
+	}
+
+	if(DEBUG_CAM) {
+		int dx = x - WIN_W/2;
+		int dy = y - WIN_H/2;
+		// cout << "dx: " << dx << endl;
+		if(dx) { // get rotation in the x direction
+		    camera.RotateYaw(-camera_rotate_speed*dx);
+		}
+		if(dy) {
+			camera.RotatePitch(-camera_rotate_speed*dy);
+		}
+	
+		glutWarpPointer(WIN_W/2, WIN_H/2);
+	
+		just_warped = true;
+	}
+}
+
 void GLUTinit() {	
 	glutInitDisplayMode (GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
 	glutInitWindowSize(WIN_W, WIN_H);
@@ -155,9 +207,9 @@ void GLUTinit() {
 	glutKeyboardUpFunc(keyUp);
 
 	glutMouseFunc (mouse);
+	glutMotionFunc (motion);
+	glutPassiveMotionFunc (motion);
 
-	// glutMotionFunc (motion);
-	// glutPassiveMotionFunc (passivemotion);
 
 	// glutReshapeFunc (myReshape);
 }
@@ -195,7 +247,6 @@ void init() {
 	//
 	Cube = new Object("models/cube.obj", 0, colorLoc, matrix_loc);
 	combineVec4Vectors(vertices, Cube->GetVertices());
-	Cube->Move(0.0, 0.0, 10.0);
 	Cube->SetColor(1.0, 0.0, 0.0);
 	
 	// Initialization of all vertices
@@ -213,8 +264,13 @@ int main(int argc, char **argv) {
 
 	glutInit(&argc, argv);
 
-	// load_obj("models/pipe.obj", vertices, uvs, normals);
-	
+	// for(int i=0; i < lvl_floor.floor_map.size(); ++i) {
+	// 	for(int j=0; j < lvl_floor.floor_map[i].size(); ++j) {
+	// 		cout << lvl_floor.floor_map[i][j].get_block_id() << " ";
+	// 	}
+	// 	cout << endl;
+	// }
+
 	// Initializes the GLUT and callbacks 
 	GLUTinit();
 

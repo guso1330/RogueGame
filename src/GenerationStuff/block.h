@@ -1,3 +1,5 @@
+#ifndef BLOCK_H
+#define BLOCK_H
 //_________________________________________________________________
 /*	Author: Cyrus Ditchendorf & Gus Oberdick
 |*	Class:	block
@@ -35,3 +37,5 @@ private:
 
 
 };
+
+#endif

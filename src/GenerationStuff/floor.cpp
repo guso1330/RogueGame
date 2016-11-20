@@ -7,7 +7,8 @@
 #define DIM_MIN 20  //was 15
 #define ROOM_SIZE_SCALE .00125
 #define ROOM_SPAWNER_PADDING 4
-void floor::generate_dims()
+
+void Floor::generate_dims()
 {
 	srand(time(NULL));
 	x_dim = rand() % DIM_SLACK + DIM_MIN;		//from size 15 to 40
@@ -17,7 +18,7 @@ void floor::generate_dims()
 	std::cout << "Y-dim = " << y_dim << std::endl;
 }
 
-void floor::calculate_room_spawners()
+void Floor::calculate_room_spawners()
 {
 	total_blocks = x_dim * y_dim;
 	std::cout << "Total Blocks = " << total_blocks << std::endl;
@@ -25,20 +26,20 @@ void floor::calculate_room_spawners()
 	std:: cout << "Total Room Spawners = " << num_room_spawners << std::endl;
 }
 
-void floor::calculate_max_room_size()
+void Floor::calculate_max_room_size()
 {
 	max_room_size = total_blocks * ROOM_SIZE_SCALE + 2;
 	std::cout << "Max Room Size = " << max_room_size << std::endl;
 }
 
-void floor::resize_floor_map()
+void Floor::resize_floor_map()
 {
 	floor_map.resize(x_dim);
 	for(int i = 0; i < x_dim; ++i)
 		floor_map[i].resize(y_dim);
 }
 
-void floor::connect_rooms(int x1, int y1, int x2, int y2)
+void Floor::connect_rooms(int x1, int y1, int x2, int y2)
 {
 	//determine more left room
 	int hallway_x, hallway_y;
@@ -81,7 +82,7 @@ void floor::connect_rooms(int x1, int y1, int x2, int y2)
 	}
 }
 
-void floor::generate_room(int x, int y)
+void Floor::generate_room(int x, int y)
 {
 	//size of this room
 	int this_room_size;
@@ -102,7 +103,7 @@ void floor::generate_room(int x, int y)
 
 }
 
-void floor::place_room_spawners()
+void Floor::place_room_spawners()
 {
 	std::cout << "Placing room spawners." << std::endl;
 	int room_x, room_y;
@@ -151,12 +152,10 @@ void floor::place_room_spawners()
 
 }
 
-void floor::save_floor(string name)
+void Floor::save_floor(string name)
 {
 	ofstream myFile;
-	myFile.open("output.txt");
-	
-	 
+	myFile.open("./output.txt");
 
 	for(int i = 0; i < y_dim; i++)
 	{
@@ -193,7 +192,7 @@ void floor::save_floor(string name)
 	myFile.close();
 }
 
-void floor::generate_stairs()
+void Floor::generate_stairs()
 {
 	//find room generator nodes
 	vector<int> x_vec;
@@ -226,7 +225,7 @@ void floor::generate_stairs()
 	//place exit stairs
 	floor_map[x_vec[end_stair]][y_vec[end_stair]].set_block_id(11);
 }
-floor::floor()
+Floor::Floor()
 {
 	generate_dims();
 	calculate_room_spawners();

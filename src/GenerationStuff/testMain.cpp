@@ -2,10 +2,10 @@
 #include "entity.h"
 int main()
 {
-	floor test_floor;
-	entity test_entity;
+	Floor test_floor;
+	// entity test_entity;
 
-	test_entity.show_stats();
+	// test_entity.show_stats();
 
 	return 0;
 }
