@@ -102,10 +102,13 @@ extern "C" void display() {
 		for(int j=0; j < lvl_floor.floor_map[i].size(); ++j) {
 			Cube->Move(fx, 0.0, fz);
 			block t_block = lvl_floor.floor_map[i][j];
-			if(t_block.get_block_id() != 0) {
-				
+			if(t_block.get_block_id() != 0 && t_block.get_block_id() != 3) {
+				Cube->SetColor(1.0, 0.0, 0.0);
+			} else if(t_block.get_block_id() == 3) {
+				Cube->SetColor(0.0, 0.2, 1.0);
+				Cube->DrawWireframe();
 			} else {
-				// Cube->SetColor(1.0, 0.0, 0.0);
+				Cube->SetColor(1.0, 0.0, 0.0);
 				Cube->DrawWireframe();
 			}
 			fx += 1.0;
@@ -113,7 +116,6 @@ extern "C" void display() {
 		fz += 1.0;
 		fx = 0.0;
 	}
-
 	fz = 0.0;	
 
 	glutSwapBuffers();
