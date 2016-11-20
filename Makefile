@@ -29,8 +29,11 @@ include /home/guso/Documents/cs4250/code-egs/Makefile.defs
 # make (i.e. with no arguments).
 all: rogueGame
 	
-rogueGame: rogueGame.cc mesh.o camera.o objloader.o
-	$(CC) rogueGame.cc $(InitShader) objloader.o camera.o mesh.o $(OPTIONS) $(LDLIBS) -o rogueGame
+rogueGame: rogueGame.cc object.o mesh.o camera.o objloader.o
+	$(CC) rogueGame.cc $(InitShader) objloader.o camera.o mesh.o object.o $(OPTIONS) $(LDLIBS) -o rogueGame
+
+object.o: src/object.h src/object.cc mesh.o objloader.o
+	$(CC) src/object.cc -c $(OPTIONS)
 
 mesh.o: src/mesh.h src/mesh.cc
 	$(CC) src/mesh.cc -c $(OPTIONS)
