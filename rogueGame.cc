@@ -43,6 +43,7 @@ typedef Angel::vec4 color4;
 
 // OBJECTS IN SCENE
 Object *Cube;
+Object *floor_tile;
 Floor lvl_floor;
 float fx=0.0, fz=0.0;
 
@@ -74,7 +75,7 @@ mat4 model_view;
 mat4 projection;
 
 // Initialize the camera
-Camera camera(vec4(0.0f, 0.0f, -2.0f, 0.0f), 70.0f, (float)WIN_W/(float)WIN_H, 0.1f, 100.0f);
+Camera camera(vec4(0.0f, 0.0f, -2.0f, 0.0f), 70.0f, (float)WIN_W/(float)WIN_H, 0.1f, 50.0f);
 float camera_speed = 0.5f;
 float camera_rotate_speed = (M_PI/180) * 0.5;
 
@@ -96,27 +97,34 @@ extern "C" void display() {
 	//
 	// DRAWING
 	//
-	// Cube->DrawWireframe();
 	// RENDER THE LEVEL
 	for(int i=0; i < lvl_floor.floor_map.size(); ++i) {
 		for(int j=0; j < lvl_floor.floor_map[i].size(); ++j) {
 			Cube->Move(fx, 0.0, fz);
+			floor_tile->Move(fx, 0.0, fz);
 			block t_block = lvl_floor.floor_map[i][j];
-			if(t_block.get_block_id() != 0 && t_block.get_block_id() != 3) {
-				Cube->SetColor(1.0, 0.0, 0.0);
-			} else if(t_block.get_block_id() == 3) {
-				Cube->SetColor(0.0, 0.2, 1.0);
-				Cube->DrawWireframe();
-			} else {
-				Cube->SetColor(1.0, 0.0, 0.0);
+			if(t_block.get_block_id() == 3) {
+				floor_tile->SetColor(0.4, 1.0, 0.0);
+				floor_tile->DrawSolid();
+			} else if(t_block.get_block_id() == 2) {
+				floor_tile->SetColor(0.4, 1.0, 0.0);
+				floor_tile->DrawSolid();
+			} else if (t_block.get_block_id() == 10) {
+				// Cube->SetColor(1.0, 1.0, 0.0);
+				// Cube->DrawWireframe();
+			} else if (t_block.get_block_id() == 11) {
+				// Cube->SetColor(1.0, 0.0, 0.0);
+				// Cube->DrawWireframe();
+			} else { // draw the walls
+				Cube->SetColor(1.0, 0.0, 1.0);
 				Cube->DrawWireframe();
 			}
-			fx += 1.0;
+			fx -= 5.0;
 		}
-		fz += 1.0;
+		fz += 5.0;
 		fx = 0.0;
 	}
-	fz = 0.0;	
+	fz = 0.0;
 
 	glutSwapBuffers();
 }
@@ -247,9 +255,13 @@ void init() {
 	//
 	// Build all objects in scene
 	//
-	Cube = new Object("models/cube.obj", 0, colorLoc, matrix_loc);
+	Cube = new Object("models/cube_5unit.obj", 0, colorLoc, matrix_loc);
 	combineVec4Vectors(vertices, Cube->GetVertices());
 	Cube->SetColor(1.0, 0.0, 0.0);
+
+	floor_tile = new Object("models/plane_5unit.obj", Cube->GetVertices().size(), colorLoc, matrix_loc);
+	combineVec4Vectors(vertices, floor_tile->GetVertices());
+	floor_tile->SetColor(1.0, 1.0, 1.0);
 	
 	// Initialization of all vertices
 	glBufferData(GL_ARRAY_BUFFER, vertices.size()*sizeof(vec4), &vertices[0], GL_STATIC_DRAW);
@@ -265,13 +277,6 @@ void init() {
 int main(int argc, char **argv) {
 
 	glutInit(&argc, argv);
-
-	// for(int i=0; i < lvl_floor.floor_map.size(); ++i) {
-	// 	for(int j=0; j < lvl_floor.floor_map[i].size(); ++j) {
-	// 		cout << lvl_floor.floor_map[i][j].get_block_id() << " ";
-	// 	}
-	// 	cout << endl;
-	// }
 
 	// Initializes the GLUT and callbacks 
 	GLUTinit();
