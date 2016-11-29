@@ -84,7 +84,7 @@ mat4 model_view;
 mat4 projection;
 
 // Initialize the camera
-Camera camera(vec4(playerX, 10.0f, playerZ*1.0, 0.0f), 70.0f, (float)WIN_W/(float)WIN_H, 0.1f, 50.0f);
+Camera camera(vec4(playerX, 10.0f, playerZ*1.0, 0.0f), 70.0f, (float)WIN_W/(float)WIN_H, 0.1f, 100.0f);
 float camera_speed = 0.5f;
 float camera_rotate_speed = (M_PI/180) * 0.5;
 
@@ -197,7 +197,7 @@ extern "C" void SpecialKeys(int key, int x, int y)
 			//check if in bounds
 			if(checkCol(lvl_floor.floor_map[playerZ][playerX -1].get_block_id()))
 				playerX = playerX - 1;
-				camera.SetPos(vec4(playerX*5, 30.0f, playerZ*5, 0.0f));
+			camera.SetPos(vec4(playerX*5 +15.0f, 45.0f, playerZ*5, 0.0f));
 				//playerZ = playerZ - 1; 
 			break;
 		case GLUT_KEY_LEFT:
@@ -206,7 +206,7 @@ extern "C" void SpecialKeys(int key, int x, int y)
 				//playerX = playerX - 1;
 				if(checkCol(lvl_floor.floor_map[playerZ +1][playerX].get_block_id()))
 					playerZ = playerZ + 1; 
-				camera.SetPos(vec4(playerX*5, 30.0f, playerZ*5, 0.0f));
+				camera.SetPos(vec4(playerX*5 +15.0f, 45.0f, playerZ*5, 0.0f));
 			break;
 		case GLUT_KEY_RIGHT:
 			std:: cout << "Move player right. " << std::endl;
@@ -214,7 +214,7 @@ extern "C" void SpecialKeys(int key, int x, int y)
 			//playerX = playerX + 1;
 			if(checkCol(lvl_floor.floor_map[playerZ -1][playerX].get_block_id()))
 				playerZ = playerZ - 1;
-			camera.SetPos(vec4(playerX*5, 30.0f, playerZ*5, 0.0f));
+			camera.SetPos(vec4(playerX*5 +15.0f, 45.0f, playerZ*5, 0.0f));
 			break;
 		case GLUT_KEY_DOWN:
 			std:: cout << "Move player down. " << std::endl;
@@ -222,8 +222,10 @@ extern "C" void SpecialKeys(int key, int x, int y)
 			//playerZ = playerZ + 1;
 			if(checkCol(lvl_floor.floor_map[playerZ][playerX +1].get_block_id()))
 				playerX = playerX + 1;
-			camera.SetPos(vec4(playerX*5, 30.0f, playerZ*5, 0.0f));
-			break;		
+			camera.SetPos(vec4(playerX*5 +15.0f, 45.0f, playerZ*5, 0.0f));
+			//camera.SetDir(vec4(0.0,0.0,1.0,0.0));
+			//camera.SetPitch(-45.0);
+			break;	
 	}
 
 	glutPostRedisplay();
@@ -365,7 +367,7 @@ void init() {
 	combineVec4Vectors(vertices, floor_tile->GetVertices());
 	floor_tile->SetColor(1.0, 1.0, 1.0);
 	
-	Player = new Object("models/cube_5unit.obj", Cube->GetVertices().size() + floor_tile->GetVertices().size(), colorLoc, matrix_loc);
+	Player = new Object("models/cube.obj", Cube->GetVertices().size() + floor_tile->GetVertices().size(), colorLoc, matrix_loc);
 	combineVec4Vectors(vertices, Player->GetVertices());
 	Player -> SetColor(1.0,0.0,0.0);
 
