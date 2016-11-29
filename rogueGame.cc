@@ -113,7 +113,7 @@ extern "C" void display() {
 			floor_tile->Move(fx, 0.0, fz);
 			Player ->Move(playerX*5,0.0,playerZ*5);
 			StairsUp ->Move(fx, 0.0, fz);
-			StairsDown ->Move(fx, 0.0, fz);
+			StairsDown ->Move(fx, -5.0, fz);
 
 			//Cube->Move(fz, 0.0, fx);
 			//floor_tile->Move(fz, 0.0, fx);
