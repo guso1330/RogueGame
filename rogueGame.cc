@@ -195,7 +195,7 @@ extern "C" void SpecialKeys(int key, int x, int y)
 			//std:: cout << "Checking block at: " << playerX << "," << playerZ-1 << std:: endl;
 			//check colision
 			//check if in bounds
-			//if(checkCol(lvl_floor.floor_map[playerX-1][playerZ].get_block_id()))
+			if(checkCol(lvl_floor.floor_map[playerZ][playerX -1].get_block_id()))
 				playerX = playerX - 1;
 				camera.SetPos(vec4(playerX*5, 30.0f, playerZ*5, 0.0f));
 				//playerZ = playerZ - 1; 
@@ -204,21 +204,24 @@ extern "C" void SpecialKeys(int key, int x, int y)
 			std:: cout << "Move player left. " << std::endl;
 			//check colision
 				//playerX = playerX - 1;
-				playerZ = playerZ + 1; 
+				if(checkCol(lvl_floor.floor_map[playerZ +1][playerX].get_block_id()))
+					playerZ = playerZ + 1; 
 				camera.SetPos(vec4(playerX*5, 30.0f, playerZ*5, 0.0f));
 			break;
 		case GLUT_KEY_RIGHT:
 			std:: cout << "Move player right. " << std::endl;
 			//check colision
 			//playerX = playerX + 1;
-			playerZ = playerZ - 1;
+			if(checkCol(lvl_floor.floor_map[playerZ -1][playerX].get_block_id()))
+				playerZ = playerZ - 1;
 			camera.SetPos(vec4(playerX*5, 30.0f, playerZ*5, 0.0f));
 			break;
 		case GLUT_KEY_DOWN:
 			std:: cout << "Move player down. " << std::endl;
 			//check colision
 			//playerZ = playerZ + 1;
-			playerX = playerX + 1;
+			if(checkCol(lvl_floor.floor_map[playerZ][playerX +1].get_block_id()))
+				playerX = playerX + 1;
 			camera.SetPos(vec4(playerX*5, 30.0f, playerZ*5, 0.0f));
 			break;		
 	}
