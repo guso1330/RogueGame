@@ -99,7 +99,7 @@ extern "C" void display() {
 	projection = camera.GetViewProjection();
 	glUniformMatrix4fv(matrix_loc, 1, GL_TRUE, model_view);
 	glUniformMatrix4fv(projection_loc, 1, GL_TRUE, projection);
-
+	//camera.SetDir(vec4(0.0,0.0,1.0,0.0));
 	ControlCamera(camera, key, camera_speed, camera_rotate_speed);
 	camera.Update();
 
@@ -111,7 +111,7 @@ extern "C" void display() {
 		for(int j=0; j < lvl_floor.floor_map[i].size(); ++j) {
 			Cube->Move(fx, 0.0, fz);
 			floor_tile->Move(fx, 0.0, fz);
-			Player ->Move(playerX*5,0.0,playerZ*5);
+			Player ->Move(playerX*5,0.5,playerZ*5);
 			StairsUp ->Move(fx, 0.0, fz);
 			StairsDown ->Move(fx, -5.0, fz);
 
@@ -124,10 +124,10 @@ extern "C" void display() {
 			block t_block = lvl_floor.floor_map[i][j];
 			//block t_block = lvl_floor.floor_map[j][i];
 			if(t_block.get_block_id() == 3 || t_block.get_block_id() == 1) {
-				floor_tile->SetColor(0.4, 1.0, 0.0);
+				floor_tile->SetColor(0.4, 0.5, 0.3);
 				floor_tile->DrawSolid();
 			} else if(t_block.get_block_id() == 2) {
-				floor_tile->SetColor(0.4, 1.0, 0.0);
+				floor_tile->SetColor(0.4, 0.5, 0.0);
 				floor_tile->DrawSolid();
 			} else if (t_block.get_block_id() == 10) {
 				StairsUp -> SetColor(200.0/255.0, 200.0/255.0, 200.0/255.0);
@@ -153,7 +153,7 @@ extern "C" void display() {
 				// Cube->SetColor(1.0, 0.0, 0.0);
 				// Cube->DrawWireframe();
 			} else { // draw the walls
-				Cube->SetColor(220.0/255.0, 220.0/255.0, 220.0/255.0);
+				Cube->SetColor(220.0/255.0, 220.0/255.0, 150.0/255.0);
 				Cube->DrawSolid();
 			}
 			//fx -= 5.0;
@@ -170,8 +170,22 @@ extern "C" void display() {
 
 //X AND Z GET SWAPPED WHEN RENDERING, WHAT IS SHOWING IS NOT HOW IT IS IN DATA. 
 
+void makeNextFloor()
+{
+	Floor new_floor;
+	player_placed = false; 
+	lvl_floor = new_floor;
+}
+
 bool checkCol(int toCheck)
 {
+
+	if(toCheck == 11)
+	{
+		std::cout << "Exit Found!" << std:: endl;
+		makeNextFloor();
+	}
+
 	std:: cout << "toCheck = " << toCheck << std::endl;
 	if(toCheck != 0) //if its a floor tile
 		return true; //can move
@@ -223,6 +237,7 @@ extern "C" void SpecialKeys(int key, int x, int y)
 			if(checkCol(lvl_floor.floor_map[playerZ][playerX +1].get_block_id()))
 				playerX = playerX + 1;
 			camera.SetPos(vec4(playerX*5 +15.0f, 45.0f, playerZ*5, 0.0f));
+			//camera.SetPitch(-45.0f);
 			//camera.SetDir(vec4(0.0,0.0,1.0,0.0));
 			//camera.SetPitch(-45.0);
 			break;	
