@@ -18,7 +18,7 @@
 //
 
 #include <iostream>
-#include "Angel.h"
+#include "src/Angel.h"
 #include <vector>
 #include <fstream>
 #include <string>
@@ -41,9 +41,18 @@ typedef Angel::vec4 color4;
 // GLOBAL CONSTANTS
 //
 
+bool player_placed = false;
+int playerX;
+int playerZ;
+
 // OBJECTS IN SCENE
 Object *Cube;
 Object *floor_tile;
+Object *Player;
+Object *StairsUp;
+Object *StairsDown;
+
+
 Floor lvl_floor;
 float fx=0.0, fz=0.0;
 
@@ -75,7 +84,7 @@ mat4 model_view;
 mat4 projection;
 
 // Initialize the camera
-Camera camera(vec4(0.0f, 0.0f, -2.0f, 0.0f), 70.0f, (float)WIN_W/(float)WIN_H, 0.1f, 50.0f);
+Camera camera(vec4(playerX, 10.0f, playerZ*1.0, 0.0f), 70.0f, (float)WIN_W/(float)WIN_H, 0.1f, 50.0f);
 float camera_speed = 0.5f;
 float camera_rotate_speed = (M_PI/180) * 0.5;
 
@@ -102,31 +111,120 @@ extern "C" void display() {
 		for(int j=0; j < lvl_floor.floor_map[i].size(); ++j) {
 			Cube->Move(fx, 0.0, fz);
 			floor_tile->Move(fx, 0.0, fz);
+			Player ->Move(playerX*5,0.0,playerZ*5);
+			StairsUp ->Move(fx, 0.0, fz);
+			StairsDown ->Move(fx, 0.0, fz);
+
+			//Cube->Move(fz, 0.0, fx);
+			//floor_tile->Move(fz, 0.0, fx);
+			//Player ->Move(playerZ*5,0.0,playerX*5);
+			//StairsUp ->Move(fz, 0.0, fx);
+			//StairsDown ->Move(fz, 0.0, fx);
+
 			block t_block = lvl_floor.floor_map[i][j];
-			if(t_block.get_block_id() == 3) {
+			//block t_block = lvl_floor.floor_map[j][i];
+			if(t_block.get_block_id() == 3 || t_block.get_block_id() == 1) {
 				floor_tile->SetColor(0.4, 1.0, 0.0);
 				floor_tile->DrawSolid();
 			} else if(t_block.get_block_id() == 2) {
 				floor_tile->SetColor(0.4, 1.0, 0.0);
 				floor_tile->DrawSolid();
 			} else if (t_block.get_block_id() == 10) {
+				StairsUp -> SetColor(200.0/255.0, 200.0/255.0, 200.0/255.0);
+				StairsUp -> DrawSolid();
+				//Entry Stairs
+				//Places player, may need to tweek later to move. 
+				Player -> DrawSolid();
+				//camera.SetPos(vec4(fz,10.0,fx,0.0));
+				if(player_placed == false)
+				{
+					//Get starting pos for player.
+					playerX = fx/5;
+					playerZ = fz/5;
+					std:: cout << "Player at: " << playerX << "," << playerZ << std::endl;
+					player_placed = true;
+				}
 				// Cube->SetColor(1.0, 1.0, 0.0);
 				// Cube->DrawWireframe();
 			} else if (t_block.get_block_id() == 11) {
+				//Exit Stairs
+				StairsDown -> SetColor(200.0/255.0, 200.0/255.0, 200.0/255.0);
+				StairsDown -> DrawSolid();
 				// Cube->SetColor(1.0, 0.0, 0.0);
 				// Cube->DrawWireframe();
 			} else { // draw the walls
-				Cube->SetColor(1.0, 0.0, 1.0);
-				Cube->DrawWireframe();
+				Cube->SetColor(220.0/255.0, 220.0/255.0, 220.0/255.0);
+				Cube->DrawSolid();
 			}
-			fx -= 5.0;
+			//fx -= 5.0;
+			fx += 5.0;
 		}
 		fz += 5.0;
+		//fz -= 5.0;
 		fx = 0.0;
 	}
 	fz = 0.0;
 
 	glutSwapBuffers();
+}
+
+//X AND Z GET SWAPPED WHEN RENDERING, WHAT IS SHOWING IS NOT HOW IT IS IN DATA. 
+
+bool checkCol(int toCheck)
+{
+	std:: cout << "toCheck = " << toCheck << std::endl;
+	if(toCheck != 0) //if its a floor tile
+		return true; //can move
+	return false;
+}
+
+extern "C" void SpecialKeys(int key, int x, int y)
+{
+
+			std:: cout << "Player at : " << playerX << "," << playerZ << std:: endl;
+			std:: cout << "Floor type under player is: " << lvl_floor.floor_map[playerX][playerZ].get_block_id() << std:: endl;
+
+
+	switch(key)
+	{
+
+		case GLUT_KEY_UP:
+			std:: cout << "Move player up. " << std::endl;
+			//std:: cout << "Player at : " << playerX << "," << playerZ << std:: endl;
+			//std:: cout << "Floor type under player is: " << lvl_floor.floor_map[playerX][playerZ].get_block_id() << std:: endl;
+			//std:: cout << "Checking block at: " << playerX << "," << playerZ-1 << std:: endl;
+			//check colision
+			//check if in bounds
+			//if(checkCol(lvl_floor.floor_map[playerX-1][playerZ].get_block_id()))
+				playerX = playerX - 1;
+				camera.SetPos(vec4(playerX*5, 30.0f, playerZ*5, 0.0f));
+				//playerZ = playerZ - 1; 
+			break;
+		case GLUT_KEY_LEFT:
+			std:: cout << "Move player left. " << std::endl;
+			//check colision
+				//playerX = playerX - 1;
+				playerZ = playerZ + 1; 
+				camera.SetPos(vec4(playerX*5, 30.0f, playerZ*5, 0.0f));
+			break;
+		case GLUT_KEY_RIGHT:
+			std:: cout << "Move player right. " << std::endl;
+			//check colision
+			//playerX = playerX + 1;
+			playerZ = playerZ - 1;
+			camera.SetPos(vec4(playerX*5, 30.0f, playerZ*5, 0.0f));
+			break;
+		case GLUT_KEY_DOWN:
+			std:: cout << "Move player down. " << std::endl;
+			//check colision
+			//playerZ = playerZ + 1;
+			playerX = playerX + 1;
+			camera.SetPos(vec4(playerX*5, 30.0f, playerZ*5, 0.0f));
+			break;		
+	}
+
+	glutPostRedisplay();
+
 }
 
 extern "C" void keyDown(unsigned char k, int nx, int ny) {
@@ -215,6 +313,7 @@ void GLUTinit() {
 	glutIdleFunc(idle);
 	glutKeyboardFunc(keyDown);
 	glutKeyboardUpFunc(keyUp);
+	glutSpecialFunc(SpecialKeys);
 
 	glutMouseFunc (mouse);
 	glutMotionFunc (motion);
@@ -263,6 +362,16 @@ void init() {
 	combineVec4Vectors(vertices, floor_tile->GetVertices());
 	floor_tile->SetColor(1.0, 1.0, 1.0);
 	
+	Player = new Object("models/cube_5unit.obj", Cube->GetVertices().size() + floor_tile->GetVertices().size(), colorLoc, matrix_loc);
+	combineVec4Vectors(vertices, Player->GetVertices());
+	Player -> SetColor(1.0,0.0,0.0);
+
+	StairsUp = new Object("models/StairsUp.obj", Cube->GetVertices().size() + floor_tile->GetVertices().size() + Player->GetVertices().size(), colorLoc, matrix_loc);
+	combineVec4Vectors(vertices, StairsUp->GetVertices());
+
+	StairsDown = new Object("models/StairsUp.obj", Cube->GetVertices().size() + floor_tile->GetVertices().size() + Player->GetVertices().size() + StairsUp->GetVertices().size(), colorLoc, matrix_loc);
+	combineVec4Vectors(vertices, StairsDown->GetVertices());
+
 	// Initialization of all vertices
 	glBufferData(GL_ARRAY_BUFFER, vertices.size()*sizeof(vec4), &vertices[0], GL_STATIC_DRAW);
 

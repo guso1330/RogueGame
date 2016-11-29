@@ -168,15 +168,19 @@ void Floor::save_floor(string name)
 			{
 				case 0:
 					myFile << "▓";
+					//myFile << "0";
 					break;
 				case 1: 
 					myFile << "⧫";
+					//myFile << "1";
 					break;
 				case 2:
 					myFile << "░";
+					//myFile << "2";
 					break;
 				case 3:
 					myFile << "█";
+					//myFile << "3";
 					break;
 				case 10:
 					myFile << "S";
