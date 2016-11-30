@@ -13,10 +13,10 @@ class Floor {
 	public: 
 		Floor();
 		vector <vector <block> > floor_map; 
-		
-	private: 
 		int x_dim;
-		int y_dim; 
+		int y_dim;
+	private: 
+ 
 		int num_room_spawners;
 		int max_room_size; 
 		int total_blocks;

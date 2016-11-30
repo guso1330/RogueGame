@@ -91,6 +91,51 @@ float camera_rotate_speed = (M_PI/180) * 0.5;
 //
 // CALLBACKS
 //
+
+void updateFound(int x, int z)
+{
+	//if block is within 2 units of the player, set the is_found value to 1
+	//if its set to 1, the block will be rendered.
+
+	//from x-2, y+2 to x+2, y-2
+	//check to make sure its in scope ahead of time.
+	//for(int i = x - 1; i <= x + 1; ++i)
+	//{
+		//for(int j = z + 1; j >= z - 1; --j)
+		//{
+			
+			//check to make sure the [i][j] is within bounds. 
+			//if(i > 0)
+				//if(i < lvl_floor.x_dim)
+					//if(j > 0)
+						//if(j < lvl_floor.y_dim){
+							//cout << "Updating " << i << "," << j << "to found. " << endl;
+							//lvl_floor.floor_map[z][x].is_found = 1; 
+						//}
+		//}
+	//}
+	if(x > 0)
+		if(x < lvl_floor.x_dim)
+			if(z > 0)
+				if(z < lvl_floor.y_dim){
+					cout << "Updating " << x << "," << z << "to found. " << endl;
+					lvl_floor.floor_map[z][x].is_found = 1; 
+				}
+}
+
+void updateCluster(int x, int z)
+{
+	updateFound(x,z-1);
+	updateFound(x-1,z-1);
+	updateFound(x+1,z-1);
+	updateFound(x,z);
+	updateFound(x-1,z);
+	updateFound(x+1,z);
+	updateFound(x,z+1);
+	updateFound(x-1,z+1);
+	updateFound(x+1,z+1);
+}
+
 extern "C" void display() {
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -115,18 +160,13 @@ extern "C" void display() {
 			StairsUp ->Move(fx, 0.0, fz);
 			StairsDown ->Move(fx, -5.0, fz);
 
-			//Cube->Move(fz, 0.0, fx);
-			//floor_tile->Move(fz, 0.0, fx);
-			//Player ->Move(playerZ*5,0.0,playerX*5);
-			//StairsUp ->Move(fz, 0.0, fx);
-			//StairsDown ->Move(fz, 0.0, fx);
-
 			block t_block = lvl_floor.floor_map[i][j];
-			//block t_block = lvl_floor.floor_map[j][i];
-			if(t_block.get_block_id() == 3 || t_block.get_block_id() == 1) {
+			if((t_block.get_block_id() == 3 || t_block.get_block_id() == 1) && t_block.is_found == 1) {
+			//if(t_block.get_block_id() == 3 || t_block.get_block_id() == 1) {
 				floor_tile->SetColor(0.4, 0.5, 0.3);
 				floor_tile->DrawSolid();
-			} else if(t_block.get_block_id() == 2) {
+			} else if(t_block.get_block_id() == 2 && t_block.is_found == 1) {
+			//} else if(t_block.get_block_id() == 2) {
 				floor_tile->SetColor(0.4, 0.5, 0.0);
 				floor_tile->DrawSolid();
 			} else if (t_block.get_block_id() == 10) {
@@ -141,20 +181,26 @@ extern "C" void display() {
 					//Get starting pos for player.
 					playerX = fx/5;
 					playerZ = fz/5;
+					playerX = abs(playerX);
+					playerZ = abs(playerZ);
 					std:: cout << "Player at: " << playerX << "," << playerZ << std::endl;
 					player_placed = true;
 				}
 				// Cube->SetColor(1.0, 1.0, 0.0);
 				// Cube->DrawWireframe();
-			} else if (t_block.get_block_id() == 11) {
+			} else if (t_block.get_block_id() == 11 && t_block.is_found == 1) {
+			//} else if (t_block.get_block_id() == 11) {
 				//Exit Stairs
 				StairsDown -> SetColor(200.0/255.0, 200.0/255.0, 200.0/255.0);
 				StairsDown -> DrawSolid();
 				// Cube->SetColor(1.0, 0.0, 0.0);
 				// Cube->DrawWireframe();
 			} else { // draw the walls
-				Cube->SetColor(220.0/255.0, 220.0/255.0, 150.0/255.0);
-				Cube->DrawSolid();
+				if(t_block.is_found == 1){
+				//if(lvl_floor.floor_map[j][i].is_found == 1){
+					Cube->SetColor(220.0/255.0, 220.0/255.0, 150.0/255.0);
+					Cube->DrawSolid();
+				}
 			}
 			//fx -= 5.0;
 			fx += 5.0;
@@ -165,6 +211,9 @@ extern "C" void display() {
 	}
 	fz = 0.0;
 
+
+	updateCluster(playerX,playerZ);
+
 	glutSwapBuffers();
 }
 
@@ -173,7 +222,10 @@ extern "C" void display() {
 void makeNextFloor()
 {
 	Floor new_floor;
-	player_placed = false; 
+	playerX = 1;
+	playerZ = 1;
+	player_placed = false;
+	//sleep(1); 
 	lvl_floor = new_floor;
 }
 
@@ -194,11 +246,6 @@ bool checkCol(int toCheck)
 
 extern "C" void SpecialKeys(int key, int x, int y)
 {
-
-			std:: cout << "Player at : " << playerX << "," << playerZ << std:: endl;
-			std:: cout << "Floor type under player is: " << lvl_floor.floor_map[playerX][playerZ].get_block_id() << std:: endl;
-
-
 	switch(key)
 	{
 
@@ -209,37 +256,52 @@ extern "C" void SpecialKeys(int key, int x, int y)
 			//std:: cout << "Checking block at: " << playerX << "," << playerZ-1 << std:: endl;
 			//check colision
 			//check if in bounds
-			if(checkCol(lvl_floor.floor_map[playerZ][playerX -1].get_block_id()))
+			if(checkCol(lvl_floor.floor_map[playerZ][playerX -1].get_block_id())){
 				playerX = playerX - 1;
+				//TEST BELOW
+				//updateFound(playerX, playerZ);
+			}
 			camera.SetPos(vec4(playerX*5 +15.0f, 45.0f, playerZ*5, 0.0f));
+			std:: cout << "Player at : " << playerX << "," << playerZ << std:: endl;
+			std:: cout << "Floor type under player is: " << lvl_floor.floor_map[playerX][playerZ].get_block_id() << std:: endl;
 				//playerZ = playerZ - 1; 
 			break;
 		case GLUT_KEY_LEFT:
 			std:: cout << "Move player left. " << std::endl;
 			//check colision
 				//playerX = playerX - 1;
-				if(checkCol(lvl_floor.floor_map[playerZ +1][playerX].get_block_id()))
+				if(checkCol(lvl_floor.floor_map[playerZ +1][playerX].get_block_id())){
 					playerZ = playerZ + 1; 
+					//TEST BELOW
+					//updateFound(playerX, playerZ);
+				}
 				camera.SetPos(vec4(playerX*5 +15.0f, 45.0f, playerZ*5, 0.0f));
+				std:: cout << "Player at : " << playerX << "," << playerZ << std:: endl;
+				std:: cout << "Floor type under player is: " << lvl_floor.floor_map[playerX][playerZ].get_block_id() << std:: endl;
 			break;
 		case GLUT_KEY_RIGHT:
 			std:: cout << "Move player right. " << std::endl;
 			//check colision
 			//playerX = playerX + 1;
-			if(checkCol(lvl_floor.floor_map[playerZ -1][playerX].get_block_id()))
+			if(checkCol(lvl_floor.floor_map[playerZ -1][playerX].get_block_id())){
 				playerZ = playerZ - 1;
+				//TEST BELOW
+				//updateFound(playerX, playerZ);
+			}
 			camera.SetPos(vec4(playerX*5 +15.0f, 45.0f, playerZ*5, 0.0f));
 			break;
 		case GLUT_KEY_DOWN:
 			std:: cout << "Move player down. " << std::endl;
 			//check colision
 			//playerZ = playerZ + 1;
-			if(checkCol(lvl_floor.floor_map[playerZ][playerX +1].get_block_id()))
+			if(checkCol(lvl_floor.floor_map[playerZ][playerX +1].get_block_id())){
 				playerX = playerX + 1;
+				//TEST BELOW
+				//updateFound(playerX, playerZ);
+			}
 			camera.SetPos(vec4(playerX*5 +15.0f, 45.0f, playerZ*5, 0.0f));
-			//camera.SetPitch(-45.0f);
-			//camera.SetDir(vec4(0.0,0.0,1.0,0.0));
-			//camera.SetPitch(-45.0);
+			std:: cout << "Player at : " << playerX << "," << playerZ << std:: endl;
+			std:: cout << "Floor type under player is: " << lvl_floor.floor_map[playerX][playerZ].get_block_id() << std:: endl;
 			break;	
 	}
 
@@ -401,6 +463,9 @@ void init() {
 	glDepthFunc(GL_LEQUAL);
 
 	glClearColor(0.0, 0.0, 0.0, 1.0); // white background
+	camera.SetPos(vec4(playerX*5 +15.0f, 45.0f, playerZ*5, 0.0f));
+	camera.SetDir(vec4(0.0,0.0,1.0,0.0));
+	camera.SetDirToForward();
 }
 
 int main(int argc, char **argv) {

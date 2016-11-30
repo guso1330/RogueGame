@@ -14,7 +14,9 @@ void Floor::generate_dims()
 	x_dim = rand() % DIM_SLACK + DIM_MIN;		//from size 15 to 40
 	y_dim = rand() % DIM_SLACK + DIM_MIN;
 
-	std::cout << "X-dim = " << x_dim << std::endl;
+	//swapped to both dims using the same value as a segfault work-around 
+
+	std::cout << "X-dim = " << y_dim << std::endl;
 	std::cout << "Y-dim = " << y_dim << std::endl;
 }
 

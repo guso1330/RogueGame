@@ -29,6 +29,8 @@ public:
 	block();
 	int get_block_id();
 	void set_block_id(int new_id);  //Sets the block id
+
+	bool is_found;  //if the block has been found by the player
  
 private: 
 	int block_id; //A number corresponding to the type of block
