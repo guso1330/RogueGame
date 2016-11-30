@@ -134,6 +134,10 @@ void updateCluster(int x, int z)
 	updateFound(x,z+1);
 	updateFound(x-1,z+1);
 	updateFound(x+1,z+1);
+	updateFound(x+2,z);
+	updateFound(x-2,z);
+	updateFound(x,z+2);
+	updateFound(x,z-2);
 }
 
 extern "C" void display() {
@@ -185,6 +189,11 @@ extern "C" void display() {
 					playerZ = abs(playerZ);
 					std:: cout << "Player at: " << playerX << "," << playerZ << std::endl;
 					player_placed = true;
+					camera.SetPos(vec4(playerX*5 +15.0f, 45.0f, playerZ*5, 0.0f));
+					updateCluster(playerX,playerZ);
+					//camera.SetYaw(45.0);
+					camera.SetPitch(-45.0);
+					camera.Rotate(90.0);
 				}
 				// Cube->SetColor(1.0, 1.0, 0.0);
 				// Cube->DrawWireframe();
@@ -212,7 +221,7 @@ extern "C" void display() {
 	fz = 0.0;
 
 
-	updateCluster(playerX,playerZ);
+	//updateCluster(playerX,playerZ);
 
 	glutSwapBuffers();
 }
@@ -258,8 +267,8 @@ extern "C" void SpecialKeys(int key, int x, int y)
 			//check if in bounds
 			if(checkCol(lvl_floor.floor_map[playerZ][playerX -1].get_block_id())){
 				playerX = playerX - 1;
-				//TEST BELOW
-				//updateFound(playerX, playerZ);
+				updateCluster(playerX,playerZ);
+				//TEST ABOVE
 			}
 			camera.SetPos(vec4(playerX*5 +15.0f, 45.0f, playerZ*5, 0.0f));
 			std:: cout << "Player at : " << playerX << "," << playerZ << std:: endl;
@@ -272,8 +281,8 @@ extern "C" void SpecialKeys(int key, int x, int y)
 				//playerX = playerX - 1;
 				if(checkCol(lvl_floor.floor_map[playerZ +1][playerX].get_block_id())){
 					playerZ = playerZ + 1; 
-					//TEST BELOW
-					//updateFound(playerX, playerZ);
+				updateCluster(playerX,playerZ);
+				//TEST ABOVE
 				}
 				camera.SetPos(vec4(playerX*5 +15.0f, 45.0f, playerZ*5, 0.0f));
 				std:: cout << "Player at : " << playerX << "," << playerZ << std:: endl;
@@ -285,8 +294,8 @@ extern "C" void SpecialKeys(int key, int x, int y)
 			//playerX = playerX + 1;
 			if(checkCol(lvl_floor.floor_map[playerZ -1][playerX].get_block_id())){
 				playerZ = playerZ - 1;
-				//TEST BELOW
-				//updateFound(playerX, playerZ);
+				updateCluster(playerX,playerZ);
+				//TEST ABOVE
 			}
 			camera.SetPos(vec4(playerX*5 +15.0f, 45.0f, playerZ*5, 0.0f));
 			break;
@@ -296,8 +305,8 @@ extern "C" void SpecialKeys(int key, int x, int y)
 			//playerZ = playerZ + 1;
 			if(checkCol(lvl_floor.floor_map[playerZ][playerX +1].get_block_id())){
 				playerX = playerX + 1;
-				//TEST BELOW
-				//updateFound(playerX, playerZ);
+				updateCluster(playerX,playerZ);
+				//TEST ABOVE
 			}
 			camera.SetPos(vec4(playerX*5 +15.0f, 45.0f, playerZ*5, 0.0f));
 			std:: cout << "Player at : " << playerX << "," << playerZ << std:: endl;
@@ -384,7 +393,8 @@ extern "C" void motion(int x, int y) {
 }
 
 void GLUTinit() {	
-	glutInitDisplayMode (GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
+	glutInitDisplayMode (GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH |  GLUT_MULTISAMPLE);
+	glEnable(GL_MULTISAMPLE);
 	glutInitWindowSize(WIN_W, WIN_H);
 	glutInitWindowPosition(20,20);
 
@@ -406,6 +416,11 @@ void GLUTinit() {
 }
 
 void init() {
+
+	//glEnable(GL_MULTISAMPLE);
+
+
+
 
 	GLint colorLoc;
 

@@ -4,9 +4,9 @@
 #include <utility>
 #define SPAWNER_DENOM 95 //was 65
 #define DIM_SLACK 35 //was 35
-#define DIM_MIN 20  //was 15
+#define DIM_MIN 24  //was 15
 #define ROOM_SIZE_SCALE .0014
-#define ROOM_SPAWNER_PADDING 4
+#define ROOM_SPAWNER_PADDING 8
 
 void Floor::generate_dims()
 {
