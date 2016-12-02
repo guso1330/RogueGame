@@ -94,30 +94,10 @@ float camera_rotate_speed = (M_PI/180) * 0.5;
 
 void updateFound(int x, int z)
 {
-	//if block is within 2 units of the player, set the is_found value to 1
-	//if its set to 1, the block will be rendered.
-
-	//from x-2, y+2 to x+2, y-2
-	//check to make sure its in scope ahead of time.
-	//for(int i = x - 1; i <= x + 1; ++i)
-	//{
-		//for(int j = z + 1; j >= z - 1; --j)
-		//{
-			
-			//check to make sure the [i][j] is within bounds. 
-			//if(i > 0)
-				//if(i < lvl_floor.x_dim)
-					//if(j > 0)
-						//if(j < lvl_floor.y_dim){
-							//cout << "Updating " << i << "," << j << "to found. " << endl;
-							//lvl_floor.floor_map[z][x].is_found = 1; 
-						//}
-		//}
-	//}
-	if(x > 0)
-		if(x < lvl_floor.x_dim)
-			if(z > 0)
-				if(z < lvl_floor.y_dim){
+	if(x >= 0)
+		//if(x < lvl_floor.x_dim)
+			if(z >= 0){
+				//if(z < lvl_floor.y_dim){
 					cout << "Updating " << x << "," << z << "to found. " << endl;
 					lvl_floor.floor_map[z][x].is_found = 1; 
 				}
@@ -148,7 +128,6 @@ extern "C" void display() {
 	projection = camera.GetViewProjection();
 	glUniformMatrix4fv(matrix_loc, 1, GL_TRUE, model_view);
 	glUniformMatrix4fv(projection_loc, 1, GL_TRUE, projection);
-	//camera.SetDir(vec4(0.0,0.0,1.0,0.0));
 	ControlCamera(camera, key, camera_speed, camera_rotate_speed);
 	camera.Update();
 
@@ -166,11 +145,9 @@ extern "C" void display() {
 
 			block t_block = lvl_floor.floor_map[i][j];
 			if((t_block.get_block_id() == 3 || t_block.get_block_id() == 1) && t_block.is_found == 1) {
-			//if(t_block.get_block_id() == 3 || t_block.get_block_id() == 1) {
 				floor_tile->SetColor(0.4, 0.5, 0.3);
 				floor_tile->DrawSolid();
 			} else if(t_block.get_block_id() == 2 && t_block.is_found == 1) {
-			//} else if(t_block.get_block_id() == 2) {
 				floor_tile->SetColor(0.4, 0.5, 0.0);
 				floor_tile->DrawSolid();
 			} else if (t_block.get_block_id() == 10) {
@@ -179,7 +156,6 @@ extern "C" void display() {
 				//Entry Stairs
 				//Places player, may need to tweek later to move. 
 				Player -> DrawSolid();
-				//camera.SetPos(vec4(fz,10.0,fx,0.0));
 				if(player_placed == false)
 				{
 					//Get starting pos for player.
@@ -187,42 +163,29 @@ extern "C" void display() {
 					playerZ = fz/5;
 					playerX = abs(playerX);
 					playerZ = abs(playerZ);
-					std:: cout << "Player at: " << playerX << "," << playerZ << std::endl;
+					std:: cout << "Player placed at: " << playerX << "," << playerZ << std::endl;
 					player_placed = true;
 					camera.SetPos(vec4(playerX*5 +15.0f, 45.0f, playerZ*5, 0.0f));
 					updateCluster(playerX,playerZ);
-					//camera.SetYaw(45.0);
 					camera.SetPitch(-45.0);
 					camera.Rotate(90.0);
 				}
-				// Cube->SetColor(1.0, 1.0, 0.0);
-				// Cube->DrawWireframe();
 			} else if (t_block.get_block_id() == 11 && t_block.is_found == 1) {
-			//} else if (t_block.get_block_id() == 11) {
 				//Exit Stairs
 				StairsDown -> SetColor(200.0/255.0, 200.0/255.0, 200.0/255.0);
 				StairsDown -> DrawSolid();
-				// Cube->SetColor(1.0, 0.0, 0.0);
-				// Cube->DrawWireframe();
 			} else { // draw the walls
 				if(t_block.is_found == 1){
-				//if(lvl_floor.floor_map[j][i].is_found == 1){
 					Cube->SetColor(220.0/255.0, 220.0/255.0, 150.0/255.0);
 					Cube->DrawSolid();
 				}
 			}
-			//fx -= 5.0;
 			fx += 5.0;
 		}
 		fz += 5.0;
-		//fz -= 5.0;
 		fx = 0.0;
 	}
 	fz = 0.0;
-
-
-	//updateCluster(playerX,playerZ);
-
 	glutSwapBuffers();
 }
 
@@ -233,8 +196,7 @@ void makeNextFloor()
 	Floor new_floor;
 	playerX = 1;
 	playerZ = 1;
-	player_placed = false;
-	//sleep(1); 
+	player_placed = false; 
 	lvl_floor = new_floor;
 }
 
@@ -260,57 +222,52 @@ extern "C" void SpecialKeys(int key, int x, int y)
 
 		case GLUT_KEY_UP:
 			std:: cout << "Move player up. " << std::endl;
-			//std:: cout << "Player at : " << playerX << "," << playerZ << std:: endl;
-			//std:: cout << "Floor type under player is: " << lvl_floor.floor_map[playerX][playerZ].get_block_id() << std:: endl;
-			//std:: cout << "Checking block at: " << playerX << "," << playerZ-1 << std:: endl;
-			//check colision
-			//check if in bounds
 			if(checkCol(lvl_floor.floor_map[playerZ][playerX -1].get_block_id())){
+				std::cout << "Can move" << std:: endl;
 				playerX = playerX - 1;
+				std::cout << "Did move" << std:: endl;
 				updateCluster(playerX,playerZ);
-				//TEST ABOVE
+				std::cout << "Updated local cluster" << std:: endl;
 			}
 			camera.SetPos(vec4(playerX*5 +15.0f, 45.0f, playerZ*5, 0.0f));
 			std:: cout << "Player at : " << playerX << "," << playerZ << std:: endl;
 			std:: cout << "Floor type under player is: " << lvl_floor.floor_map[playerX][playerZ].get_block_id() << std:: endl;
-				//playerZ = playerZ - 1; 
 			break;
 		case GLUT_KEY_LEFT:
 			std:: cout << "Move player left. " << std::endl;
-			//check colision
-				//playerX = playerX - 1;
-				if(checkCol(lvl_floor.floor_map[playerZ +1][playerX].get_block_id())){
-					playerZ = playerZ + 1; 
+			if(checkCol(lvl_floor.floor_map[playerZ +1][playerX].get_block_id())){
+				std::cout << "Can move" << std:: endl;
+				playerZ = playerZ + 1; 
+				std::cout << "Did move" << std:: endl;
 				updateCluster(playerX,playerZ);
-				//TEST ABOVE
-				}
+				std::cout << "Updated local cluster" << std:: endl;
+			}
 				camera.SetPos(vec4(playerX*5 +15.0f, 45.0f, playerZ*5, 0.0f));
 				std:: cout << "Player at : " << playerX << "," << playerZ << std:: endl;
 				std:: cout << "Floor type under player is: " << lvl_floor.floor_map[playerX][playerZ].get_block_id() << std:: endl;
 			break;
 		case GLUT_KEY_RIGHT:
 			std:: cout << "Move player right. " << std::endl;
-			//check colision
-			//playerX = playerX + 1;
 			if(checkCol(lvl_floor.floor_map[playerZ -1][playerX].get_block_id())){
+				std::cout << "Can move" << std:: endl;
 				playerZ = playerZ - 1;
+				std::cout << "Did move" << std:: endl;
 				updateCluster(playerX,playerZ);
-				//TEST ABOVE
+				std::cout << "Updated local cluster" << std:: endl;
 			}
 			camera.SetPos(vec4(playerX*5 +15.0f, 45.0f, playerZ*5, 0.0f));
 			break;
 		case GLUT_KEY_DOWN:
 			std:: cout << "Move player down. " << std::endl;
-			//check colision
-			//playerZ = playerZ + 1;
 			if(checkCol(lvl_floor.floor_map[playerZ][playerX +1].get_block_id())){
+				std::cout << "Can move" << std:: endl;
 				playerX = playerX + 1;
+				std::cout << "Did move" << std:: endl;
 				updateCluster(playerX,playerZ);
-				//TEST ABOVE
+				std::cout << "Updated local cluster" << std:: endl;
 			}
 			camera.SetPos(vec4(playerX*5 +15.0f, 45.0f, playerZ*5, 0.0f));
 			std:: cout << "Player at : " << playerX << "," << playerZ << std:: endl;
-			std:: cout << "Floor type under player is: " << lvl_floor.floor_map[playerX][playerZ].get_block_id() << std:: endl;
 			break;	
 	}
 
@@ -354,22 +311,11 @@ extern "C" void mouse(int button, int state, int x, int y)
 }
 extern "C" void idle()
 {
-	// static GLint time=glutGet(GLUT_ELAPSED_TIME);
-	// Theta[Axis] += incr*(glutGet(GLUT_ELAPSED_TIME)-time);
-	// time = glutGet(GLUT_ELAPSED_TIME);
-
-	// if (Theta[Axis] > 360.0) {
-	// 	Theta[Axis] -= 360.0;
-	// }
-
 	glutPostRedisplay();
 }
 
 extern "C" void motion(int x, int y) {
 	static bool just_warped = false;
-
-	// cout << x << ", " << y << endl;
-
 	if(just_warped) {
 		just_warped = false;
 		return;
@@ -378,7 +324,6 @@ extern "C" void motion(int x, int y) {
 	if(DEBUG_CAM) {
 		int dx = x - WIN_W/2;
 		int dy = y - WIN_H/2;
-		// cout << "dx: " << dx << endl;
 		if(dx) { // get rotation in the x direction
 		    camera.RotateYaw(-camera_rotate_speed*dx);
 		}
@@ -410,18 +355,9 @@ void GLUTinit() {
 	glutMouseFunc (mouse);
 	glutMotionFunc (motion);
 	glutPassiveMotionFunc (motion);
-
-
-	// glutReshapeFunc (myReshape);
 }
 
 void init() {
-
-	//glEnable(GL_MULTISAMPLE);
-
-
-
-
 	GLint colorLoc;
 
 	GLuint vao;
