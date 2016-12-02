@@ -75,7 +75,7 @@ mat4 model_view;
 mat4 projection;
 
 // Initialize the camera
-Camera camera(vec4(0.0f, 0.0f, -2.0f, 0.0f), 70.0f, (float)WIN_W/(float)WIN_H, 0.1f, 50.0f);
+Camera camera(vec4(0.0f, 0.0f, 5.0f, 0.0f), 70.0f, (float)WIN_W/(float)WIN_H, 0.1f, 50.0f);
 float camera_speed = 0.5f;
 float camera_rotate_speed = (M_PI/180) * 0.5;
 
@@ -119,9 +119,9 @@ extern "C" void display() {
 				Cube->SetColor(1.0, 0.0, 1.0);
 				Cube->DrawWireframe();
 			}
-			fx -= 5.0;
+			fx += 5.0;
 		}
-		fz += 5.0;
+		fz -= 5.0;
 		fx = 0.0;
 	}
 	fz = 0.0;
