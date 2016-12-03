@@ -29,8 +29,10 @@ public:
 	block();
 	int get_block_id();
 	int get_block_content_id();
+	int get_has_hostile(){return has_hostile;};
 	void set_block_id(int new_id);  //Sets the block id
 	void set_block_content_id(int new_id);
+	void set_has_hostile(bool has){has_hostile = has;};
 
 
 	bool is_found;  //if the block has been found by the player
@@ -39,7 +41,7 @@ private:
 	int block_id; //A number corresponding to the type of block
 	int block_content_id; // A number corresponding to what the block contains (decorational items)
 	bool is_solid; //Can the player pass through this block? Depends on what the block's ID is and if it contains an object.
-
+	bool has_hostile; 
 
 };
 

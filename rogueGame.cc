@@ -59,7 +59,7 @@ Object *Player;
 Object *StairsUp;
 Object *StairsDown;
 Object *PlaceholderObject; 
-
+Object *HostileUnit; 
 bool canMove = 1 ;
 
 //Objects
@@ -114,7 +114,7 @@ void updateFound(int x, int z)
 		//if(x < lvl_floor.x_dim)
 			if(z >= 0){
 				//if(z < lvl_floor.y_dim){
-					cout << "Updating " << x << "," << z << "to found. " << endl;
+					//cout << "Updating " << x << "," << z << "to found. " << endl;
 					lvl_floor.floor_map[z][x].is_found = 1; 
 				}
 }
@@ -194,6 +194,7 @@ extern "C" void display() {
 			Object3->Move(fx, 0.5, fz);
 			Object4->Move(fx, 0.5, fz);
 			Object5->Move(fx, 0.5, fz);
+			HostileUnit->Move(fx, 0.5, fz);
 			block t_block = lvl_floor.floor_map[i][j];
 			if((t_block.get_block_id() == 3 || t_block.get_block_id() == 1) && t_block.is_found == 1) {
 				floor_tile->SetColor(0.4, 0.5, 0.3);
@@ -210,8 +211,11 @@ extern "C" void display() {
 						Object4 -> DrawSolid();
 					if(t_block.get_block_content_id() == 5)
 						Object5 -> DrawSolid();
-
 				} 
+				if(t_block.get_has_hostile() == 1)
+				{
+					HostileUnit -> DrawSolid();
+				}
 				//	PlaceholderObject->DrawSolid();
 				//}
 			} else if(t_block.get_block_id() == 2 && t_block.is_found == 1) {
@@ -284,6 +288,22 @@ bool checkCol(int toCheck)
 	return false;
 }
 
+void process_hostile_moves()
+{
+	std::cout << "Process all hostile unit movement." << std::endl;
+	/*int num_hostiles = lvl_floor.hostile_unit_pos.size();
+	int rx, ry;
+	for(int i = 0; i < num_hostiles; ++i)
+	{
+		rx = rand() % 2;
+		ry = rand() % 2; 
+		if(checkCol(lvl_floor.floor_map[ lvl_floor.hostile_unit_pos[i].y_coord + ry][ lvl_floor.hostile_unit_pos[i].x_coord + rx].get_block_id()) == true){
+			lvl_floor.move_enemy(lvl_floor.hostile_unit_pos[i].x_coord + rx,lvl_floor.hostile_unit_pos[i].y_coord + ry,i);
+			
+		}
+	}*/
+}
+
 extern "C" void SpecialKeys(int key, int x, int y)
 {
 	switch(key)
@@ -298,6 +318,7 @@ extern "C" void SpecialKeys(int key, int x, int y)
 				std::cout << "Did move" << std:: endl;
 				updateCluster(playerX,playerZ);
 				std::cout << "Updated local cluster" << std:: endl;
+				process_hostile_moves();
 			}
 			camera.SetPos(vec4(playerX*5 +15.0f, 45.0f, playerZ*5, 0.0f));
 			std:: cout << "Player at : " << playerX << "," << playerZ << std:: endl;
@@ -314,6 +335,7 @@ extern "C" void SpecialKeys(int key, int x, int y)
 				std::cout << "Did move" << std:: endl;
 				updateCluster(playerX,playerZ);
 				std::cout << "Updated local cluster" << std:: endl;
+				process_hostile_moves();
 			}
 				camera.SetPos(vec4(playerX*5 +15.0f, 45.0f, playerZ*5, 0.0f));
 				std:: cout << "Player at : " << playerX << "," << playerZ << std:: endl;
@@ -330,6 +352,7 @@ extern "C" void SpecialKeys(int key, int x, int y)
 				std::cout << "Did move" << std:: endl;
 				updateCluster(playerX,playerZ);
 				std::cout << "Updated local cluster" << std:: endl;
+				process_hostile_moves();
 			}
 			camera.SetPos(vec4(playerX*5 +15.0f, 45.0f, playerZ*5, 0.0f));
 			
@@ -344,6 +367,7 @@ extern "C" void SpecialKeys(int key, int x, int y)
 				std::cout << "Did move" << std:: endl;
 				updateCluster(playerX,playerZ);
 				std::cout << "Updated local cluster" << std:: endl;
+				process_hostile_moves();
 			}
 			camera.SetPos(vec4(playerX*5 +15.0f, 45.0f, playerZ*5, 0.0f));
 			std:: cout << "Player at : " << playerX << "," << playerZ << std:: endl;
@@ -366,6 +390,10 @@ extern "C" void keyDown(unsigned char k, int nx, int ny) {
 		case 't':
 		case 'T':
 			DEBUG_CAM = !DEBUG_CAM;
+			break;
+		case 'o':
+		case 'O':
+			process_hostile_moves();
 			break;
 		default:
 			break;
@@ -516,6 +544,10 @@ void init() {
 	combineVec4Vectors(vertices, Object5->GetVertices());
 	Object5 -> SetColor(0.0,0.9,1.0);
 
+
+	HostileUnit = new Object("models/cube.obj", Cube->GetVertices().size() + floor_tile->GetVertices().size() + Player->GetVertices().size() + StairsUp->GetVertices().size() + StairsDown->GetVertices().size() + PlaceholderObject ->GetVertices().size() + Object1->GetVertices().size() + Object2->GetVertices().size() + Object3->GetVertices().size() + Object4->GetVertices().size() + Object5->GetVertices().size(), colorLoc, matrix_loc);
+	combineVec4Vectors(vertices, HostileUnit->GetVertices());
+	HostileUnit -> SetColor(1.0,1.0,0.0);
 
 	// Initialization of all vertices
 	glBufferData(GL_ARRAY_BUFFER, vertices.size()*sizeof(vec4), &vertices[0], GL_STATIC_DRAW);
