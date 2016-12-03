@@ -25,9 +25,11 @@
 #include <sstream>
 #include <cstring>
 #include <typeinfo>
-#include <unistd.h>
-#include "src/irrKlang/irrKlang.h"
 
+
+// #include "src/irrKlang/irrKlang.h"
+
+#include "src/soundengine.h"
 #include "src/objloader.h"
 #include "src/object.h"
 #include "src/camera.h"
@@ -35,13 +37,13 @@
 #include "src/GenerationStuff/floor.h"
 
 using namespace std;
-using namespace irrklang;
 
 typedef Angel::vec4 point4;
 typedef Angel::vec4 color4;
 
 // start the sound engine with default parameters
-ISoundEngine* SOUND_ENGINE;
+// ISoundEngine* SOUND_ENGINE;
+SoundEngine sound;
 
 //
 // GLOBAL CONSTANTS
@@ -201,7 +203,7 @@ extern "C" void display() {
 					camera.SetPos(vec4(playerX*5 +15.0f, 45.0f, playerZ*5, 0.0f));
 					updateCluster(playerX,playerZ);
 					camera.SetPitch(-45.0);
-					camera.Rotate(90.0);
+					camera.Rotate(90);
 				}
 			} else if (t_block.get_block_id() == 11 && t_block.is_found == 1) {
 				//Exit Stairs
@@ -257,6 +259,7 @@ extern "C" void SpecialKeys(int key, int x, int y)
 
 		case GLUT_KEY_UP:
 			std:: cout << "Move player up. " << std::endl;
+			sound.PlaySound("sounds/footsteps.wav");
 			if(checkCol(lvl_floor.floor_map[playerZ][playerX -1].get_block_id())){
 				std::cout << "Can move" << std:: endl;
 				playerX = playerX - 1;
@@ -270,6 +273,8 @@ extern "C" void SpecialKeys(int key, int x, int y)
 			break;
 		case GLUT_KEY_LEFT:
 			std:: cout << "Move player left. " << std::endl;
+			sound.PlaySound("sounds/footsteps.wav");
+
 			if(checkCol(lvl_floor.floor_map[playerZ +1][playerX].get_block_id())){
 				std::cout << "Can move" << std:: endl;
 				playerZ = playerZ + 1; 
@@ -283,6 +288,8 @@ extern "C" void SpecialKeys(int key, int x, int y)
 			break;
 		case GLUT_KEY_RIGHT:
 			std:: cout << "Move player right. " << std::endl;
+			sound.PlaySound("sounds/footsteps.wav");
+
 			if(checkCol(lvl_floor.floor_map[playerZ -1][playerX].get_block_id())){
 				std::cout << "Can move" << std:: endl;
 				playerZ = playerZ - 1;
@@ -294,6 +301,8 @@ extern "C" void SpecialKeys(int key, int x, int y)
 			break;
 		case GLUT_KEY_DOWN:
 			std:: cout << "Move player down. " << std::endl;
+			sound.PlaySound("sounds/footsteps.wav");
+
 			if(checkCol(lvl_floor.floor_map[playerZ][playerX +1].get_block_id())){
 				std::cout << "Can move" << std:: endl;
 				playerX = playerX + 1;
@@ -394,17 +403,7 @@ void GLUTinit() {
 }
 
 void initSound() {
-
-	// Start the sound engine
-	SOUND_ENGINE = createIrrKlangDevice();
-
-	// Error check that the sound engine is working
-	if (!SOUND_ENGINE) {
-		printf("Could not startup engine\n");
-		exit(0); // error starting up the engine
-	}
-
-
+	// sound.PlayLoop("sounds/getout.ogg");
 }
 
 void init() {
