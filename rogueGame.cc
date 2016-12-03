@@ -55,7 +55,7 @@ Object *floor_tile;
 Object *Player;
 Object *StairsUp;
 Object *StairsDown;
-
+Object *PlaceholderObject; 
 
 Floor lvl_floor;
 float fx=0.0, fz=0.0;
@@ -146,11 +146,13 @@ extern "C" void display() {
 			Player ->Move(playerX*5,0.5,playerZ*5);
 			StairsUp ->Move(fx, 0.0, fz);
 			StairsDown ->Move(fx, -5.0, fz);
-
+			PlaceholderObject ->Move(fx, 0.5, fz);
 			block t_block = lvl_floor.floor_map[i][j];
 			if((t_block.get_block_id() == 3 || t_block.get_block_id() == 1) && t_block.is_found == 1) {
 				floor_tile->SetColor(0.4, 0.5, 0.3);
 				floor_tile->DrawSolid();
+				if(t_block.get_block_content_id() != 0)
+					PlaceholderObject->DrawSolid();
 			} else if(t_block.get_block_id() == 2 && t_block.is_found == 1) {
 				floor_tile->SetColor(0.4, 0.5, 0.0);
 				floor_tile->DrawSolid();
@@ -424,6 +426,9 @@ void init() {
 	StairsDown = new Object("models/StairsUp.obj", Cube->GetVertices().size() + floor_tile->GetVertices().size() + Player->GetVertices().size() + StairsUp->GetVertices().size(), colorLoc, matrix_loc);
 	combineVec4Vectors(vertices, StairsDown->GetVertices());
 
+	PlaceholderObject = new Object("models/cube.obj", Cube->GetVertices().size() + floor_tile->GetVertices().size() + Player->GetVertices().size() + StairsUp->GetVertices().size() + StairsDown->GetVertices().size(), colorLoc, matrix_loc);
+	combineVec4Vectors(vertices, PlaceholderObject->GetVertices());
+	PlaceholderObject -> SetColor(0.0,0.0,0.5);
 	// Initialization of all vertices
 	glBufferData(GL_ARRAY_BUFFER, vertices.size()*sizeof(vec4), &vertices[0], GL_STATIC_DRAW);
 
