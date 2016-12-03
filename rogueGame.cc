@@ -57,6 +57,13 @@ Object *StairsUp;
 Object *StairsDown;
 Object *PlaceholderObject; 
 
+//Objects
+Object *Object1;
+Object *Object2;
+Object *Object3;
+Object *Object4;
+Object *Object5;
+
 Floor lvl_floor;
 float fx=0.0, fz=0.0;
 
@@ -147,12 +154,31 @@ extern "C" void display() {
 			StairsUp ->Move(fx, 0.0, fz);
 			StairsDown ->Move(fx, -5.0, fz);
 			PlaceholderObject ->Move(fx, 0.5, fz);
+			Object1->Move(fx, 0.5, fz);
+			Object2->Move(fx, 0.5, fz);
+			Object3->Move(fx, 0.5, fz);
+			Object4->Move(fx, 0.5, fz);
+			Object5->Move(fx, 0.5, fz);
 			block t_block = lvl_floor.floor_map[i][j];
 			if((t_block.get_block_id() == 3 || t_block.get_block_id() == 1) && t_block.is_found == 1) {
 				floor_tile->SetColor(0.4, 0.5, 0.3);
 				floor_tile->DrawSolid();
 				if(t_block.get_block_content_id() != 0)
-					PlaceholderObject->DrawSolid();
+				{
+					if(t_block.get_block_content_id() == 1)
+						Object1 -> DrawSolid();
+					if(t_block.get_block_content_id() == 2)
+						Object2 -> DrawSolid();
+					if(t_block.get_block_content_id() == 3)
+						Object3 -> DrawSolid();
+					if(t_block.get_block_content_id() == 4)
+						Object4 -> DrawSolid();
+					if(t_block.get_block_content_id() == 5)
+						Object5 -> DrawSolid();
+
+				} 
+				//	PlaceholderObject->DrawSolid();
+				//}
 			} else if(t_block.get_block_id() == 2 && t_block.is_found == 1) {
 				floor_tile->SetColor(0.4, 0.5, 0.0);
 				floor_tile->DrawSolid();
@@ -426,11 +452,36 @@ void init() {
 	StairsDown = new Object("models/StairsUp.obj", Cube->GetVertices().size() + floor_tile->GetVertices().size() + Player->GetVertices().size() + StairsUp->GetVertices().size(), colorLoc, matrix_loc);
 	combineVec4Vectors(vertices, StairsDown->GetVertices());
 
+	//default object id, used 
 	PlaceholderObject = new Object("models/cube.obj", Cube->GetVertices().size() + floor_tile->GetVertices().size() + Player->GetVertices().size() + StairsUp->GetVertices().size() + StairsDown->GetVertices().size(), colorLoc, matrix_loc);
 	combineVec4Vectors(vertices, PlaceholderObject->GetVertices());
 	PlaceholderObject -> SetColor(0.0,0.0,0.5);
+
+
+	Object1 = new Object("models/cube.obj", Cube->GetVertices().size() + floor_tile->GetVertices().size() + Player->GetVertices().size() + StairsUp->GetVertices().size() + StairsDown->GetVertices().size() + PlaceholderObject ->GetVertices().size(), colorLoc, matrix_loc);
+	combineVec4Vectors(vertices, Object1->GetVertices());
+	Object1 -> SetColor(0.0,0.3,0.4);
+
+	Object2 = new Object("models/cube.obj", Cube->GetVertices().size() + floor_tile->GetVertices().size() + Player->GetVertices().size() + StairsUp->GetVertices().size() + StairsDown->GetVertices().size() + PlaceholderObject ->GetVertices().size() + Object1->GetVertices().size(), colorLoc, matrix_loc);
+	combineVec4Vectors(vertices, Object2->GetVertices());
+	Object2 -> SetColor(0.0,0.5,0.6);
+
+	Object3 = new Object("models/cube.obj", Cube->GetVertices().size() + floor_tile->GetVertices().size() + Player->GetVertices().size() + StairsUp->GetVertices().size() + StairsDown->GetVertices().size() + PlaceholderObject ->GetVertices().size() + Object1->GetVertices().size() + Object2->GetVertices().size(), colorLoc, matrix_loc);
+	combineVec4Vectors(vertices, Object3->GetVertices());
+	Object3 -> SetColor(0.0,0.7,0.8);
+
+	Object4 = new Object("models/cube.obj", Cube->GetVertices().size() + floor_tile->GetVertices().size() + Player->GetVertices().size() + StairsUp->GetVertices().size() + StairsDown->GetVertices().size() + PlaceholderObject ->GetVertices().size() + Object1->GetVertices().size() + Object2->GetVertices().size() + Object3->GetVertices().size(), colorLoc, matrix_loc);
+	combineVec4Vectors(vertices, Object4->GetVertices());
+	Object4 -> SetColor(0.0,0.9,1.0);
+
+	Object5 = new Object("models/cube.obj", Cube->GetVertices().size() + floor_tile->GetVertices().size() + Player->GetVertices().size() + StairsUp->GetVertices().size() + StairsDown->GetVertices().size() + PlaceholderObject ->GetVertices().size() + Object1->GetVertices().size() + Object2->GetVertices().size() + Object3->GetVertices().size() + Object4->GetVertices().size(), colorLoc, matrix_loc);
+	combineVec4Vectors(vertices, Object5->GetVertices());
+	Object5 -> SetColor(0.0,0.9,1.0);
+
+
 	// Initialization of all vertices
 	glBufferData(GL_ARRAY_BUFFER, vertices.size()*sizeof(vec4), &vertices[0], GL_STATIC_DRAW);
+
 
 	glClearDepth(1.0f);
 	glEnable(GL_CULL_FACE);
