@@ -23,14 +23,16 @@
 # last-modified: Mon Sep 17 15:17:00 2012
 
 # Assumes the following file exists in the proper place.
-include /home/cyrus/Documents/code-egs/Makefile.defs
+# include /home/cyrus/Documents/code-egs/Makefile.defs
+include /home/guso/Documents/cs4250/code-egs/Makefile.defs
+
 
 # The first item in the file is what will be made if you just type
 # make (i.e. with no arguments).
 all: rogueGame
 	
 rogueGame: rogueGame.cc floor.o block.o object.o mesh.o camera.o objloader.o
-	$(CC) rogueGame.cc $(InitShader) *.o $(OPTIONS) $(LDLIBS) -o rogueGame
+	$(CC) rogueGame.cc $(InitShader) *.o $(OPTIONS) $(LDLIBS) -o rogueGame ./bin/libIrrKlang.so -pthread
 
 floor.o: src/GenerationStuff/floor.h src/GenerationStuff/floor.cpp block.o
 	$(CC) src/GenerationStuff/floor.cpp -c $(OPTIONS)
