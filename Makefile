@@ -32,7 +32,7 @@ include /home/guso/Documents/cs4250/code-egs/Makefile.defs
 all: rogueGame
 	
 rogueGame: rogueGame.cc floor.o block.o object.o mesh.o camera.o objloader.o
-	$(CC) rogueGame.cc $(InitShader) *.o $(OPTIONS) $(LDLIBS) -o rogueGame ./bin/libIrrKlang.so -pthread
+	$(CC) rogueGame.cc $(InitShader) *.o $(OPTIONS) $(LDLIBS) -o rogueGame ./bin/libIrrKlang.so ./bin/libSOIL.a -pthread
 
 floor.o: src/GenerationStuff/floor.h src/GenerationStuff/floor.cpp block.o
 	$(CC) src/GenerationStuff/floor.cpp -c $(OPTIONS)

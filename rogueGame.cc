@@ -26,8 +26,8 @@
 #include <cstring>
 #include <typeinfo>
 
-// #include "src/irrKlang/irrKlang.h"
-
+// #include "src/stb_image/stb_image.h"
+#include "src/SOIL/SOIL.h"
 #include "src/soundengine.h"
 #include "src/objloader.h"
 #include "src/object.h"
@@ -476,6 +476,18 @@ void init() {
 	Object5 = new Object("models/cube.obj", Cube->GetVertices().size() + floor_tile->GetVertices().size() + Player->GetVertices().size() + StairsUp->GetVertices().size() + StairsDown->GetVertices().size() + PlaceholderObject ->GetVertices().size() + Object1->GetVertices().size() + Object2->GetVertices().size() + Object3->GetVertices().size() + Object4->GetVertices().size(), colorLoc, matrix_loc);
 	combineVec4Vectors(vertices, Object5->GetVertices());
 	Object5 -> SetColor(0.0,0.9,1.0);
+
+	// int width = 510;
+	// int height = 512;
+	// int channel = 0;
+	// unsigned char* image = SOIL_load_image("./textures/cartoon_floor_texture.jpg", &width, &height, &channel, SOIL_LOAD_RGB);
+	// unsigned char*
+	// SOIL_load_image
+	// (
+	// 	const char *filename,
+	// 	int *width, int *height, int *channels,
+	// 	int force_channels
+	// );
 
 
 	// Initialization of all vertices
