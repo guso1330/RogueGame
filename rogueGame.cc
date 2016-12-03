@@ -25,6 +25,7 @@
 #include <sstream>
 #include <cstring>
 #include <typeinfo>
+#include <unistd.h>
 #include "src/irrKlang/irrKlang.h"
 
 #include "src/objloader.h"
@@ -229,6 +230,8 @@ void makeNextFloor()
 	playerX = 1;
 	playerZ = 1;
 	player_placed = false; 
+	//sleep(1);
+
 	lvl_floor = new_floor;
 }
 
