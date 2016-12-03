@@ -7,7 +7,15 @@
 #define DIM_MIN 24  //was 15
 #define ROOM_SIZE_SCALE .0014
 #define ROOM_SPAWNER_PADDING 8
-
+#define OBJECT_DENSITY .15 
+//Block Content Macros: 
+#define EMPTY 0
+#define CHAIR 1
+#define TABLE 2
+#define SCRAPS 3
+#define RUBBLE 4
+#define BONFIRE 5
+#define NUM_ITEMS 5  //number of items excluding EMPTY
 void Floor::generate_dims()
 {
 	srand(time(NULL));
@@ -84,6 +92,46 @@ void Floor::connect_rooms(int x1, int y1, int x2, int y2)
 	}
 }
 
+void Floor::generate_objects(int x1, int y1, int x2, int y2)
+{
+	std::cout << "Generating objects in the space [" << x1 << "][" << y1 << "] to [" << x2 << "][" << y2 << "]" << std::endl;
+	//total area of room:
+	int area;
+	int x_temp;
+	int y_temp;
+	x_temp = std::abs(x1 - x2);
+	y_temp = std::abs(y1 - y2);
+	area = x_temp * y_temp;
+	std::cout << "Room is " << x_temp << " by " << y_temp << std::endl;
+	std::cout << "Total area of this room: " << area << " units." << std::endl;
+
+	int num_objects; 
+	num_objects = area * OBJECT_DENSITY; 
+	std::cout << "Total number of objects in this room: " << num_objects << std::endl;
+
+	for(int counter = 0; counter < num_objects; ++counter )
+	{
+		std::cout << "Generating object #" << counter << std::endl;
+		int object_id_to_place;
+		object_id_to_place = rand() % NUM_ITEMS;
+
+		//x1 and y1 represent the bottom left point
+		//x2 and y2 represent the top right point
+
+		int rand_x; 
+		int rand_y;
+
+		rand_x = (rand() % x_temp) + x1;
+		rand_y =  (rand() % y_temp) + y1;
+
+		std::cout << "Placing object with ID = " << object_id_to_place << " at coord [" << rand_x << "][" << rand_y << "]." <<std::endl;
+
+		floor_map[rand_x][rand_y].set_block_content_id(object_id_to_place);
+
+	}
+
+}
+
 void Floor::generate_room(int x, int y)
 {
 	//size of this room
@@ -102,6 +150,13 @@ void Floor::generate_room(int x, int y)
 			}
 		}
 	}
+	int x1, y1, x2, y2;
+	x1 = x - this_room_size;
+	y1 = y - this_room_size;
+
+	x2 = x + this_room_size;
+	y2 = y + this_room_size;
+	generate_objects(x1,y1,x2,y2);	
 
 }
 
@@ -169,7 +224,12 @@ void Floor::save_floor(string name)
 			switch(cur_id)
 			{
 				case 0:
-					myFile << "▓";
+					if(floor_map[j][i].get_block_content_id()!= 0)
+						myFile << floor_map[j][i].get_block_content_id();
+						else{
+							myFile << "▓";
+						}
+					
 					//myFile << "0";
 					break;
 				case 1: 
@@ -181,7 +241,11 @@ void Floor::save_floor(string name)
 					//myFile << "2";
 					break;
 				case 3:
-					myFile << "█";
+					if(floor_map[j][i].get_block_content_id()!= 0)
+						myFile << floor_map[j][i].get_block_content_id();
+						else{
+							myFile << "█";
+						}
 					//myFile << "3";
 					break;
 				case 10:

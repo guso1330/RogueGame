@@ -30,6 +30,7 @@ class Floor {
 		void save_floor(string file_name);
 		void generate_room(int x, int y);
 		void generate_stairs();
+		void generate_objects(int x1, int y1, int x2, int y2);
 	};
 
 #endif
