@@ -25,6 +25,7 @@
 #include <sstream>
 #include <cstring>
 #include <typeinfo>
+#include "src/irrKlang/irrKlang.h"
 
 #include "src/objloader.h"
 #include "src/object.h"
@@ -33,14 +34,17 @@
 #include "src/GenerationStuff/floor.h"
 
 using namespace std;
+using namespace irrklang;
 
 typedef Angel::vec4 point4;
 typedef Angel::vec4 color4;
 
+// start the sound engine with default parameters
+ISoundEngine* SOUND_ENGINE;
+
 //
 // GLOBAL CONSTANTS
 //
-
 bool player_placed = false;
 int playerX;
 int playerZ;
@@ -309,6 +313,7 @@ extern "C" void mouse(int button, int state, int x, int y)
     }
   }
 }
+
 extern "C" void idle()
 {
 	glutPostRedisplay();
@@ -355,6 +360,20 @@ void GLUTinit() {
 	glutMouseFunc (mouse);
 	glutMotionFunc (motion);
 	glutPassiveMotionFunc (motion);
+}
+
+void initSound() {
+
+	// Start the sound engine
+	SOUND_ENGINE = createIrrKlangDevice();
+
+	// Error check that the sound engine is working
+	if (!SOUND_ENGINE) {
+		printf("Could not startup engine\n");
+		exit(0); // error starting up the engine
+	}
+
+
 }
 
 void init() {
@@ -428,7 +447,8 @@ int main(int argc, char **argv) {
 
 	glewInit();
 
-	// Initializes the buffers and vao	
+	// Initializes the buffers and vao
+	initSound();
 	init();
 
 	glEnable(GL_DEPTH_TEST);
