@@ -7,14 +7,22 @@
 #include <string> 
 #include "block.h"
 
+struct coord
+{
+	int x_coord;
+	int y_coord; 
+};
+
 using namespace std;
 
 class Floor {
 	public: 
 		Floor();
 		vector <vector <block> > floor_map; 
+		vector <coord> hostile_unit_pos; 
 		int x_dim;
 		int y_dim;
+		void move_enemy(int new_x, int new_y, int hostile_index);
 	private: 
  
 		int num_room_spawners;
@@ -31,6 +39,8 @@ class Floor {
 		void generate_room(int x, int y);
 		void generate_stairs();
 		void generate_objects(int x1, int y1, int x2, int y2);
+		void generate_hostile_units(int x1, int y1, int x2, int y2);
+
 	};
 
 #endif

@@ -8,6 +8,7 @@
 #define ROOM_SIZE_SCALE .0014
 #define ROOM_SPAWNER_PADDING 8
 #define OBJECT_DENSITY .15 
+#define HOSTILE_DENSITY .05
 //Block Content Macros: 
 #define EMPTY 0
 #define CHAIR 1
@@ -94,7 +95,7 @@ void Floor::connect_rooms(int x1, int y1, int x2, int y2)
 
 void Floor::generate_objects(int x1, int y1, int x2, int y2)
 {
-	std::cout << "Generating objects in the space [" << x1 << "][" << y1 << "] to [" << x2 << "][" << y2 << "]" << std::endl;
+	//std::cout << "Generating objects in the space [" << x1 << "][" << y1 << "] to [" << x2 << "][" << y2 << "]" << std::endl;
 	//total area of room:
 	int area;
 	int x_temp;
@@ -102,16 +103,16 @@ void Floor::generate_objects(int x1, int y1, int x2, int y2)
 	x_temp = std::abs(x1 - x2);
 	y_temp = std::abs(y1 - y2);
 	area = x_temp * y_temp;
-	std::cout << "Room is " << x_temp << " by " << y_temp << std::endl;
-	std::cout << "Total area of this room: " << area << " units." << std::endl;
+	//std::cout << "Room is " << x_temp << " by " << y_temp << std::endl;
+	//std::cout << "Total area of this room: " << area << " units." << std::endl;
 
 	int num_objects; 
 	num_objects = area * OBJECT_DENSITY; 
-	std::cout << "Total number of objects in this room: " << num_objects << std::endl;
+	//std::cout << "Total number of objects in this room: " << num_objects << std::endl;
 
 	for(int counter = 0; counter < num_objects; ++counter )
 	{
-		std::cout << "Generating object #" << counter << std::endl;
+		//std::cout << "Generating object #" << counter << std::endl;
 		int object_id_to_place;
 		object_id_to_place = rand() % NUM_ITEMS;
 
@@ -124,11 +125,47 @@ void Floor::generate_objects(int x1, int y1, int x2, int y2)
 		rand_x = (rand() % x_temp) + x1;
 		rand_y =  (rand() % y_temp) + y1;
 
-		std::cout << "Placing object with ID = " << object_id_to_place << " at coord [" << rand_x << "][" << rand_y << "]." <<std::endl;
+		//std::cout << "Placing object with ID = " << object_id_to_place << " at coord [" << rand_x << "][" << rand_y << "]." <<std::endl;
 
 		floor_map[rand_x][rand_y].set_block_content_id(object_id_to_place);
 
 	}
+
+}
+
+void Floor::generate_hostile_units(int x1, int y1, int x2, int y2)
+{
+	int area; 
+	int x_temp;
+	int y_temp; 
+	x_temp = std::abs(x1 - x2);
+	y_temp = std::abs(y1 - y2);
+	area = x_temp * y_temp;
+
+	int num_hostiles;
+	num_hostiles = area * HOSTILE_DENSITY;
+
+	for(int counter = 0; counter < num_hostiles; /*++counter*/)
+	{
+		int rand_x;
+		int rand_y;
+
+		rand_x = (rand() % x_temp) + x1;
+		rand_y = (rand() % y_temp) + y1;
+
+		if(floor_map[rand_x][rand_y].get_block_content_id() == 0){
+			cout << "Placed Hostile." << std:: endl;
+			coord cur_coord;
+			cur_coord.x_coord = rand_x;
+			cur_coord.y_coord = rand_y;
+			hostile_unit_pos.push_back(cur_coord);
+			floor_map[rand_x][rand_y].set_has_hostile(1);
+			//hostile_unit_pos.x_coord.push_back(rand_x);
+			//hostile_unit_pos.y_coord.push_back(rand_y);
+			++counter;
+		}
+	}
+
 
 }
 
@@ -157,7 +194,7 @@ void Floor::generate_room(int x, int y)
 	x2 = x + this_room_size;
 	y2 = y + this_room_size;
 	generate_objects(x1,y1,x2,y2);	
-
+	generate_hostile_units(x1,y1,x2,y2);
 }
 
 void Floor::place_room_spawners()
@@ -294,6 +331,22 @@ void Floor::generate_stairs()
 
 	//place exit stairs
 	floor_map[x_vec[end_stair]][y_vec[end_stair]].set_block_id(11);
+}
+
+void Floor::move_enemy(int new_x, int new_y, int hostile_index)
+{
+	//set old pos to empty, set new one to 1;
+	/*std:: cout << "In move_enemy for index = " << hostile_index << std::endl;
+	int at_x;
+	int at_y; 
+	at_x = hostile_unit_pos[hostile_index].x_coord;
+	at_y = hostile_unit_pos[hostile_index].y_coord;
+
+	std::cout << "Moving." << std:: endl;
+	floor_map[at_x][at_y].set_has_hostile(0);
+	cout << "enemy at " << at_x <<" , " << at_y << " = " << floor_map[at_x][at_y].get_has_hostile() << std:: endl;
+	floor_map[new_x][new_y].set_has_hostile(1); 
+	cout << "enemy at " << new_x <<" , " << new_y << " = " << floor_map[new_x][new_y].get_has_hostile() << std:: endl;*/
 }
 Floor::Floor()
 {
