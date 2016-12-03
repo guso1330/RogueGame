@@ -25,7 +25,7 @@
 #include <sstream>
 #include <cstring>
 #include <typeinfo>
-
+#include <unistd.h>
 
 // #include "src/irrKlang/irrKlang.h"
 
@@ -59,6 +59,8 @@ Object *Player;
 Object *StairsUp;
 Object *StairsDown;
 Object *PlaceholderObject; 
+
+bool canMove = 1 ;
 
 //Objects
 Object *Object1;
@@ -119,19 +121,49 @@ void updateFound(int x, int z)
 
 void updateCluster(int x, int z)
 {
-	updateFound(x,z-1);
+
+
+
+	//
+	//       |(+1,-1)|(+1)|
+	//( 0,-2)|( 0,-1)|( 0, 0)|( 0,+1)|(0,+2)
+	//
+	//
+	//
+
+	//update block unit is on
+	updateFound(x,z);
+
+	//update diagonals
 	updateFound(x-1,z-1);
 	updateFound(x+1,z-1);
-	updateFound(x,z);
-	updateFound(x-1,z);
-	updateFound(x+1,z);
-	updateFound(x,z+1);
 	updateFound(x-1,z+1);
 	updateFound(x+1,z+1);
-	updateFound(x+2,z);
-	updateFound(x-2,z);
-	updateFound(x,z+2);
-	updateFound(x,z-2);
+
+	//update vertical & horizontal with the condition that theres no wall in the way for the
+	//farthest ones. Basic Line of Sight functionality. 
+
+	updateFound(x,z-1);
+	if(lvl_floor.floor_map[z-1][x].get_block_id() != 0)
+		updateFound(x,z-2);
+
+	updateFound(x-1,z);
+	if(lvl_floor.floor_map[z][x-1].get_block_id() != 0)
+		updateFound(x-2,z);
+
+	updateFound(x+1,z);
+	if(lvl_floor.floor_map[z][x+1].get_block_id() != 0)
+		updateFound(x+2,z);
+
+	updateFound(x,z+1);
+	if(lvl_floor.floor_map[z+1][x].get_block_id() != 0)
+		updateFound(x,z+2);
+
+
+	
+	
+	
+	
 }
 
 extern "C" void display() {
@@ -270,6 +302,7 @@ extern "C" void SpecialKeys(int key, int x, int y)
 			camera.SetPos(vec4(playerX*5 +15.0f, 45.0f, playerZ*5, 0.0f));
 			std:: cout << "Player at : " << playerX << "," << playerZ << std:: endl;
 			std:: cout << "Floor type under player is: " << lvl_floor.floor_map[playerX][playerZ].get_block_id() << std:: endl;
+			
 			break;
 		case GLUT_KEY_LEFT:
 			std:: cout << "Move player left. " << std::endl;
@@ -285,6 +318,7 @@ extern "C" void SpecialKeys(int key, int x, int y)
 				camera.SetPos(vec4(playerX*5 +15.0f, 45.0f, playerZ*5, 0.0f));
 				std:: cout << "Player at : " << playerX << "," << playerZ << std:: endl;
 				std:: cout << "Floor type under player is: " << lvl_floor.floor_map[playerX][playerZ].get_block_id() << std:: endl;
+				
 			break;
 		case GLUT_KEY_RIGHT:
 			std:: cout << "Move player right. " << std::endl;
@@ -298,6 +332,7 @@ extern "C" void SpecialKeys(int key, int x, int y)
 				std::cout << "Updated local cluster" << std:: endl;
 			}
 			camera.SetPos(vec4(playerX*5 +15.0f, 45.0f, playerZ*5, 0.0f));
+			
 			break;
 		case GLUT_KEY_DOWN:
 			std:: cout << "Move player down. " << std::endl;
@@ -312,6 +347,7 @@ extern "C" void SpecialKeys(int key, int x, int y)
 			}
 			camera.SetPos(vec4(playerX*5 +15.0f, 45.0f, playerZ*5, 0.0f));
 			std:: cout << "Player at : " << playerX << "," << playerZ << std:: endl;
+
 			break;	
 	}
 
