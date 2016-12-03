@@ -23,22 +23,25 @@
 # last-modified: Mon Sep 17 15:17:00 2012
 
 # Assumes the following file exists in the proper place.
-include /home/cyrus/Documents/code-egs/Makefile.defs
-# include /home/guso/Documents/cs4250/code-egs/Makefile.defs
+# include /home/cyrus/Documents/code-egs/Makefile.defs
+include /home/guso/Documents/cs4250/code-egs/Makefile.defs
 
 
 # The first item in the file is what will be made if you just type
 # make (i.e. with no arguments).
 all: rogueGame
 	
-rogueGame: rogueGame.cc floor.o block.o object.o mesh.o camera.o objloader.o
-	$(CC) rogueGame.cc $(InitShader) *.o $(OPTIONS) $(LDLIBS) -o rogueGame ./bin/libIrrKlang.so ./bin/libSOIL.a -pthread
+rogueGame: rogueGame.cc floor.o block.o texture.o object.o mesh.o camera.o objloader.o
+	$(CC) rogueGame.cc $(InitShader) *.o $(OPTIONS) $(LDLIBS) -o rogueGame ./bin/libIrrKlang.so -pthread
 
 floor.o: src/GenerationStuff/floor.h src/GenerationStuff/floor.cpp block.o
 	$(CC) src/GenerationStuff/floor.cpp -c $(OPTIONS)
 
 block.o: src/GenerationStuff/block.h src/GenerationStuff/block.cpp
 	$(CC) src/GenerationStuff/block.cpp -c $(OPTIONS)
+
+texture.o: src/texture.h src/texture.cc
+	$(CC) src/texture.cc -c $(OPTIONS)
 
 object.o: src/object.h src/object.cc mesh.o objloader.o
 	$(CC) src/object.cc -c $(OPTIONS)
