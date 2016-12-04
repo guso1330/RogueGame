@@ -1,13 +1,16 @@
 #ifndef TEXTURE_H
 #define TEXTURE_H
 
+#include "Angel.h"
 #include <string>
-#include "GL/glew.h"
+
+using namespace std;
 
 class Texture {
 
 	public:
-		Texture();
+		Texture(const std::string& filename);
+		~Texture();
 	
 		void Bind(unsigned int unit);
 

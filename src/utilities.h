@@ -32,4 +32,10 @@ void combineVec4Vectors(std::vector<vec4> &a, std::vector<vec4> b) {
 	}
 }
 
+void combineVec2Vectors(std::vector<vec2> &a, std::vector<vec2> b) {
+	for(std::vector<vec2>::iterator it=b.begin(); it < b.end(); ++it) {
+		a.push_back(*it);
+	}
+}
+
 #endif

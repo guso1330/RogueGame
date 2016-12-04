@@ -1,7 +1,6 @@
 #include "object.h"
 
 Object::Object() {
-	index = 0;
 	x = y = z = 0.0;
 	goal_x = goal_y = goal_z = 0.0;
 	r = g = b = a = 1.0;
@@ -10,12 +9,18 @@ Object::Object() {
 	last_time=glutGet(GLUT_ELAPSED_TIME);
 }
 
-Object::Object(const char *filename, GLuint nindex, GLint ncolorLoc, GLint nmatrix_loc) {
+Object::Object(const char *filename, GLuint program, GLint ncolorLoc, GLint nmatrix_loc) {
+	m_program = program;
+
 	// Default index is the start (0).
-	index = nindex;
 	matrix_loc = nmatrix_loc;
 	colorLoc = ncolorLoc;
 	InitMesh(filename);
+
+	// glBindAttribLocation(m_program, 0, "vPosition");
+	// glBindAttribLocation(m_program, 1, "texCoord");
+	// // glBindAttribLocation(m_program, 2, "normal");
+
 	x = y = z = 0.0;
 	goal_x = goal_y = goal_z = 0.0;
 	r = g = b = a = 1.0;
@@ -76,15 +81,23 @@ void Object::Update() {
 // Draw the mesh
 void Object::DrawSolid()
 {
+
+	glBindVertexArray(MyVAO);
+
 	glUniform4f(colorLoc, r, g, b, a);
 	// Setting the ModelView matrix
 	glUniformMatrix4fv(matrix_loc, 1, GL_TRUE, ModelView);
-	glDrawArrays(GL_TRIANGLES, index, GetVerticesSize());
+	glDrawArrays(GL_TRIANGLES, 0, GetVerticesSize());
+	glBindVertexArray(0);
 }
 
 void Object::DrawWireframe() {
+
+	glBindVertexArray(MyVAO);
+
 	glUniform4f(colorLoc, r, g, b, 1.0);
 	glUniformMatrix4fv(matrix_loc, 1, GL_TRUE, ModelView);
-	for(int i = index; i < index+GetVertices().size(); i+=3)
+	for(int i = 0; i < GetVertices().size(); i+=3)
 		glDrawArrays(GL_LINE_LOOP, i, 3);
+	glBindVertexArray(0);
 }

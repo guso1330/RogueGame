@@ -28,7 +28,7 @@
 #include <unistd.h>
 
 // #include "src/stb_image/stb_image.h"
-
+#include "src/texture.h"
 #include "src/soundengine.h"
 #include "src/objloader.h"
 #include "src/object.h"
@@ -44,6 +44,8 @@ typedef Angel::vec4 color4;
 // start the sound engine with default parameters
 // ISoundEngine* SOUND_ENGINE;
 SoundEngine sound;
+
+Texture tex("textures/cartoon_floor_texture.jpg");
 
 //
 // GLOBAL CONSTANTS
@@ -93,6 +95,7 @@ vector<vec4> normals;
 // Uniform variables
 GLuint program;
 GLuint loc;
+GLuint uvloc;
 GLint matrix_loc, projection_loc;
 
 // Declaring the projection and model view
@@ -471,28 +474,19 @@ void initSound() {
 }
 
 void init() {
-	GLint colorLoc;
-
-	GLuint vao;
-	glGenVertexArrays(1, &vao);
-	glBindVertexArray(vao);
-
-	GLuint buffer;
-	glGenBuffers(1, &buffer);
-	glBindBuffer(GL_ARRAY_BUFFER, buffer);
 	
 	// get shader program
 	program = InitShader("vshader.glsl", "fshader.glsl");
 	glUseProgram(program);
+	// Loc locations
+	loc = glGetAttribLocation(program, "vPosition");
+	// uvloc = glGetAttribLocation(program, "textCoord");
 
+	GLint colorLoc;
 	colorLoc = glGetUniformLocation(program, "vcolor");
 	if(colorLoc == -1) { // Handle some error checking
 		std::cerr << "Unable to find the colorLoc parameter" << std::endl;
 	}
-
-	loc = glGetAttribLocation(program, "vPosition");
-	glEnableVertexAttribArray(loc);
-	glVertexAttribPointer(loc, 4, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0));
 
 	matrix_loc = glGetUniformLocation(program, "model_view");
 	projection_loc = glGetUniformLocation(program, "projection");
@@ -500,59 +494,44 @@ void init() {
 	//
 	// Build all objects in scene
 	//
-	Cube = new Object("models/cube_5unit.obj", 0, colorLoc, matrix_loc);
-	combineVec4Vectors(vertices, Cube->GetVertices());
+	Cube = new Object("models/cube_5unit.obj", program, colorLoc, matrix_loc);
 	Cube->SetColor(1.0, 0.0, 0.0);
 
-	floor_tile = new Object("models/plane_5unit.obj", Cube->GetVertices().size(), colorLoc, matrix_loc);
-	combineVec4Vectors(vertices, floor_tile->GetVertices());
+	floor_tile = new Object("models/plane_5unit.obj", program, colorLoc, matrix_loc);
 	floor_tile->SetColor(1.0, 1.0, 1.0);
 	
-	Player = new Object("models/cube.obj", Cube->GetVertices().size() + floor_tile->GetVertices().size(), colorLoc, matrix_loc);
-	combineVec4Vectors(vertices, Player->GetVertices());
+	Player = new Object("models/cube.obj", program, colorLoc, matrix_loc);
 	Player -> SetColor(1.0,0.0,0.0);
 
-	StairsUp = new Object("models/StairsUp.obj", Cube->GetVertices().size() + floor_tile->GetVertices().size() + Player->GetVertices().size(), colorLoc, matrix_loc);
-	combineVec4Vectors(vertices, StairsUp->GetVertices());
+	StairsUp = new Object("models/StairsUp.obj", program, colorLoc, matrix_loc);
 
-	StairsDown = new Object("models/StairsUp.obj", Cube->GetVertices().size() + floor_tile->GetVertices().size() + Player->GetVertices().size() + StairsUp->GetVertices().size(), colorLoc, matrix_loc);
-	combineVec4Vectors(vertices, StairsDown->GetVertices());
+	StairsDown = new Object("models/StairsUp.obj", program, colorLoc, matrix_loc);
 
-	//default object id, used 
-	PlaceholderObject = new Object("models/cube.obj", Cube->GetVertices().size() + floor_tile->GetVertices().size() + Player->GetVertices().size() + StairsUp->GetVertices().size() + StairsDown->GetVertices().size(), colorLoc, matrix_loc);
-	combineVec4Vectors(vertices, PlaceholderObject->GetVertices());
+	//default object id, used
+	PlaceholderObject = new Object("models/cube.obj", program, colorLoc, matrix_loc);
 	PlaceholderObject -> SetColor(0.0,0.0,0.5);
 
-
-	Object1 = new Object("models/cube.obj", Cube->GetVertices().size() + floor_tile->GetVertices().size() + Player->GetVertices().size() + StairsUp->GetVertices().size() + StairsDown->GetVertices().size() + PlaceholderObject ->GetVertices().size(), colorLoc, matrix_loc);
-	combineVec4Vectors(vertices, Object1->GetVertices());
+	Object1 = new Object("models/cube.obj", program, colorLoc, matrix_loc);
 	Object1 -> SetColor(0.0,0.3,0.4);
 
-	Object2 = new Object("models/cube.obj", Cube->GetVertices().size() + floor_tile->GetVertices().size() + Player->GetVertices().size() + StairsUp->GetVertices().size() + StairsDown->GetVertices().size() + PlaceholderObject ->GetVertices().size() + Object1->GetVertices().size(), colorLoc, matrix_loc);
-	combineVec4Vectors(vertices, Object2->GetVertices());
+	Object2 = new Object("models/cube.obj", program, colorLoc, matrix_loc);
 	Object2 -> SetColor(0.0,0.5,0.6);
 
-	Object3 = new Object("models/cube.obj", Cube->GetVertices().size() + floor_tile->GetVertices().size() + Player->GetVertices().size() + StairsUp->GetVertices().size() + StairsDown->GetVertices().size() + PlaceholderObject ->GetVertices().size() + Object1->GetVertices().size() + Object2->GetVertices().size(), colorLoc, matrix_loc);
-	combineVec4Vectors(vertices, Object3->GetVertices());
+	Object3 = new Object("models/cube.obj", program, colorLoc, matrix_loc);
 	Object3 -> SetColor(0.0,0.7,0.8);
 
-	Object4 = new Object("models/cube.obj", Cube->GetVertices().size() + floor_tile->GetVertices().size() + Player->GetVertices().size() + StairsUp->GetVertices().size() + StairsDown->GetVertices().size() + PlaceholderObject ->GetVertices().size() + Object1->GetVertices().size() + Object2->GetVertices().size() + Object3->GetVertices().size(), colorLoc, matrix_loc);
-	combineVec4Vectors(vertices, Object4->GetVertices());
+	Object4 = new Object("models/cube.obj", program, colorLoc, matrix_loc);
 	Object4 -> SetColor(0.0,0.9,1.0);
 
-	Object5 = new Object("models/cube.obj", Cube->GetVertices().size() + floor_tile->GetVertices().size() + Player->GetVertices().size() + StairsUp->GetVertices().size() + StairsDown->GetVertices().size() + PlaceholderObject ->GetVertices().size() + Object1->GetVertices().size() + Object2->GetVertices().size() + Object3->GetVertices().size() + Object4->GetVertices().size(), colorLoc, matrix_loc);
-	combineVec4Vectors(vertices, Object5->GetVertices());
+	Object5 = new Object("models/cube.obj", program, colorLoc, matrix_loc);
 	Object5 -> SetColor(0.0,0.9,1.0);
 
-	HostileUnit = new Object("models/cube.obj", Cube->GetVertices().size() + floor_tile->GetVertices().size() + Player->GetVertices().size() + StairsUp->GetVertices().size() + StairsDown->GetVertices().size() + PlaceholderObject ->GetVertices().size() + Object1->GetVertices().size() + Object2->GetVertices().size() + Object3->GetVertices().size() + Object4->GetVertices().size() + Object5->GetVertices().size(), colorLoc, matrix_loc);
-	combineVec4Vectors(vertices, HostileUnit->GetVertices());
+	HostileUnit = new Object("models/cube.obj", program, colorLoc, matrix_loc);
 	HostileUnit -> SetColor(1.0,1.0,0.0);
-
-	// Initialization of all vertices
-	glBufferData(GL_ARRAY_BUFFER, vertices.size()*sizeof(vec4), &vertices[0], GL_STATIC_DRAW);
 
 
 	glClearDepth(1.0f);
+	glEnable(GL_TEXTURE_2D);
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LEQUAL);
@@ -566,6 +545,7 @@ void init() {
 int main(int argc, char **argv) {
 
 	glutInit(&argc, argv);
+	
 
 	// Initializes the GLUT and callbacks 
 	GLUTinit();
