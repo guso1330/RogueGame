@@ -7,7 +7,7 @@
 class Object : public Mesh {
 	public:
 		Object();
-		Object(const char *filename, GLuint nindex, GLint ncolorLoc, GLint nmatrix_loc);
+		Object(const char *filename, GLuint nindex, GLint ntex_loc, GLint ncolorLoc, GLint nmatrix_loc);
 
 		void Move(GLfloat nx, GLfloat ny, GLfloat nz); // point form
 		void Move(vec4 where); // vector form
@@ -32,6 +32,7 @@ class Object : public Mesh {
 	private:
 		// GL Variables
 		GLuint index;
+		GLint m_tex_loc;
 		GLint matrix_loc;
 		GLint colorLoc;
 		mat4 ModelView;

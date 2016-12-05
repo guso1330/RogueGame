@@ -32,6 +32,10 @@ class Mesh {
 		// Accessor functions
 		inline vector<vec4> GetVertices() const { return Vertices; }
 		inline unsigned int GetVerticesSize() const { return Vertices.size(); }
+		inline vector<vec2> GetUVs() const { return UVs; }
+		inline unsigned int GetUVsSize() const { return UVs.size(); }
+		inline vector<vec4> GetNormals() const { return Normals; }
+		inline unsigned int GetNormalsSize() const { return Normals.size(); }
 
 		// Virtual Functions
 		virtual void DrawSolid() = 0;

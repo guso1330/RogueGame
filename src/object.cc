@@ -10,9 +10,10 @@ Object::Object() {
 	last_time=glutGet(GLUT_ELAPSED_TIME);
 }
 
-Object::Object(const char *filename, GLuint nindex, GLint ncolorLoc, GLint nmatrix_loc) {
+Object::Object(const char *filename, GLuint nindex, GLint ntex_loc, GLint ncolorLoc, GLint nmatrix_loc) {
 	// Default index is the start (0).
 	index = nindex;
+	m_tex_loc = ntex_loc;
 	matrix_loc = nmatrix_loc;
 	colorLoc = ncolorLoc;
 	InitMesh(filename);
