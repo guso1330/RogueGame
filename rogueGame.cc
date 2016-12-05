@@ -29,6 +29,7 @@
 
 #define STB_IMAGE_IMPLEMENTATION // needed to use the stb_image library
 #include "src/stb_image/stb_image.h"
+// #include "src/texture.h"
 #include "src/soundengine.h"
 #include "src/objloader.h"
 #include "src/object.h"
@@ -93,8 +94,8 @@ vector<vec2> uvs;
 vector<vec4> normals;
 
 // TEXTURE VARIABLES
+vector<GLuint> Textures; // Container to hold all of the textures
 GLuint texBufferID;
-GLuint texCoordID;
 GLuint texID;
 
 // Uniform variables
@@ -220,7 +221,7 @@ extern "C" void display() {
 			} else if(t_block.get_block_id() == 2 && t_block.is_found == 1) {
 				floor_tile->DrawSolid();
 			} else if (t_block.get_block_id() == 10) {
-				StairsUp -> SetColor(200.0/255.0, 200.0/255.0, 200.0/255.0);
+				// StairsUp -> SetColor(200.0/255.0, 200.0/255.0, 200.0/255.0);
 				StairsUp -> DrawSolid();
 				//Entry Stairs
 				//Places player, may need to tweek later to move. 
@@ -241,11 +242,11 @@ extern "C" void display() {
 				}
 			} else if (t_block.get_block_id() == 11 && t_block.is_found == 1) {
 				//Exit Stairs
-				StairsDown -> SetColor(200.0/255.0, 200.0/255.0, 200.0/255.0);
+				// StairsDown -> SetColor(200.0/255.0, 200.0/255.0, 200.0/255.0);
 				StairsDown -> DrawSolid();
 			} else { // draw the walls
 				if(t_block.is_found == 1){
-					Cube->SetColor(220.0/255.0, 220.0/255.0, 150.0/255.0);
+					// Cube->SetColor(220.0/255.0, 220.0/255.0, 150.0/255.0);
 					Cube->DrawSolid();
 				}
 			}
@@ -468,7 +469,35 @@ void initSound() {
 	// sound.PlayLoop("sounds/getout.ogg");
 }
 
-void initObjects(GLint tex_loc, GLuint colorLoc, GLint matrix_loc) {
+GLuint loadImage(const std::string& filename) {
+	int width, height, numComponents; // Image properties
+	unsigned char* image_data = stbi_load(filename.c_str(), &width, &height, &numComponents, 4); // Load the image
+
+	if(image_data == NULL) { // error checking
+		std::cerr << "Texture loading failed for texture: " << filename << std::endl;
+	}
+	GLuint texBufferID;
+	glGenTextures(1, &texBufferID); // Generate space for the texture
+	glBindTexture(GL_TEXTURE_2D, texBufferID);
+	
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image_data);
+
+	stbi_image_free(image_data);
+
+	return texBufferID;
+}
+
+void loadTextures() {
+	Textures.push_back(loadImage("textures/cartoon_floor_texture.jpg"));
+	Textures.push_back(loadImage("textures/Rock_02_UV_H_CM_1.jpg"));
+}
+
+void initObjects(GLuint tex_loc, GLuint colorLoc, GLint matrix_loc) {
 	//
 	// Build all objects in scene
 	//
@@ -476,15 +505,15 @@ void initObjects(GLint tex_loc, GLuint colorLoc, GLint matrix_loc) {
 	combineVec4Vectors(vertices, Cube->GetVertices());
 	combineVec2Vectors(uvs, Cube->GetUVs());
 	combineVec4Vectors(normals, Cube->GetNormals());
-	Cube->SetColor(1.0, 0.0, 0.0);
-	// Cube->SetTexture("textures/cartoon_wall_texture.jpg");
+	Cube->SetColorAlpha(0.0, 0.0, 0.0, 0.0);
+	Cube->SetTexture(Textures[1]);
 
 	floor_tile = new Object("models/plane_5unit.obj", incrementIndex(NUMVERTICES, Cube->GetVerticesSize()), tex_loc, colorLoc, matrix_loc);
 	combineVec4Vectors(vertices, floor_tile->GetVertices());
 	combineVec2Vectors(uvs, floor_tile->GetUVs());
 	combineVec4Vectors(normals, floor_tile->GetNormals());
 	floor_tile->SetColorAlpha(0.0, 0.0, 0.0, 0.0);
-	// floor_tile->SetTexture("textures/cartoon_floor_texture.jpg");
+	floor_tile->SetTexture(Textures[0]);
 	
 	Player = new Object("models/cube.obj", incrementIndex(NUMVERTICES, floor_tile->GetVerticesSize()), tex_loc, colorLoc, matrix_loc);
 	combineVec4Vectors(vertices, Player->GetVertices());
@@ -496,11 +525,13 @@ void initObjects(GLint tex_loc, GLuint colorLoc, GLint matrix_loc) {
 	combineVec4Vectors(vertices, StairsUp->GetVertices());
 	combineVec2Vectors(uvs, StairsUp->GetUVs());
 	combineVec4Vectors(normals, StairsUp->GetNormals());
+	StairsUp->SetColor(0.2, 0.2, 0.2);
 
 	StairsDown = new Object("models/StairsUp.obj", incrementIndex(NUMVERTICES, StairsUp->GetVerticesSize()), tex_loc, colorLoc, matrix_loc);
 	combineVec4Vectors(vertices, StairsDown->GetVertices());
 	combineVec2Vectors(uvs, StairsDown->GetUVs());
 	combineVec4Vectors(normals, StairsDown->GetNormals());
+	StairsDown->SetColor(0.2, 0.2, 0.2);
 
 	//default object id, used 
 	PlaceholderObject = new Object("models/cube.obj", incrementIndex(NUMVERTICES, StairsDown->GetVerticesSize()), tex_loc, colorLoc, matrix_loc);
@@ -547,17 +578,12 @@ void initObjects(GLint tex_loc, GLuint colorLoc, GLint matrix_loc) {
 	HostileUnit -> SetColor(1.0,1.0,0.0);
 }
 
+
 void init() {
 
+	loadTextures();
+
 	GLint colorLoc;
-
-	GLuint vao;
-	glGenVertexArrays(1, &vao);
-	glBindVertexArray(vao);
-
-	GLuint buffer;
-	glGenBuffers(1, &buffer);
-	glBindBuffer(GL_ARRAY_BUFFER, buffer);
 
 	// get shader program
 	program = InitShader("vshader.glsl", "fshader.glsl");
@@ -579,8 +605,27 @@ void init() {
 	matrix_loc = glGetUniformLocation(program, "model_view");
 	projection_loc = glGetUniformLocation(program, "projection");
 
+	glEnable(GL_TEXTURE_2D);
+
+
+	texID = glGetUniformLocation(program, "diffuse");
+	if(texID == -1) {
+		std::cerr << "Unable to find the texID parameter" << std::endl;
+	}
+	
+
 	// Initialize the objects
-	initObjects(texCoordID, colorLoc, matrix_loc);
+	initObjects(texID, colorLoc, matrix_loc);
+
+
+	GLuint vao;
+	glGenVertexArrays(1, &vao);
+	glBindVertexArray(vao);
+
+	GLuint buffer;
+	glGenBuffers(1, &buffer);
+	glBindBuffer(GL_ARRAY_BUFFER, buffer);
+
 
 	// Initialization of all of the various data point in the buffer
 	glBufferData(GL_ARRAY_BUFFER, vertices.size()*sizeof(vec4)
@@ -598,6 +643,7 @@ void init() {
 	glEnableVertexAttribArray(loc);
 	glVertexAttribPointer(loc, 4, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0));
 
+
 	// attribute buffer for UVs 
 	glEnableVertexAttribArray(uv_loc);
 	glVertexAttribPointer(uv_loc, 2, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(vertices.size()*sizeof(vec4)));
@@ -609,32 +655,28 @@ void init() {
 	/***************************************************************
 							Texture Stuff
 	***************************************************************/
-	int width, height, numComponents; // Image properties
-	unsigned char* image_data = stbi_load("textures/dirt_floor_cartoony.jpg", &width, &height, &numComponents, 4); // Load the image
 
-	if(image_data == NULL) { // error checking
-		std::cerr << "Texture loading failed for texture: " << "textures/dirt_floor_cartoony.jpg" << std::endl;
-	}
+	// int width, height, numComponents; // Image properties
+	// unsigned char* image_data = stbi_load("textures/dirt_floor_cartoony.jpg", &width, &height, &numComponents, 4); // Load the image
 
-	glEnable(GL_TEXTURE_2D);
-	glGenTextures(1, &texBufferID); // Generate space for the texture
-	glBindTexture(GL_TEXTURE_2D, texBufferID);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image_data);
+	// if(image_data == NULL) { // error checking
+	// 	std::cerr << "Texture loading failed for texture: " << "textures/dirt_floor_cartoony.jpg" << std::endl;
+	// }
 
-	texCoordID = glGetAttribLocation(program, "vUV");
-	glEnableVertexAttribArray(texCoordID);
-	glVertexAttribPointer(texCoordID, 2, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(vertices.size()*sizeof(vec4)));
+	// glEnable(GL_TEXTURE_2D);
+	// glGenTextures(1, &texBufferID); // Generate space for the texture
+	// glBindTexture(GL_TEXTURE_2D, texBufferID);
+
+	// glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	// glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	// glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	// glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	// glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image_data);
+	// glActiveTexture(GL_TEXTURE0);
+	// glUniform1i(texID, 0);
 
-	texID = glGetUniformLocation(program, "diffuse");
-	glActiveTexture(GL_TEXTURE0);
-	glUniform1i(texID, 0);
-
-	stbi_image_free(image_data);
+	// stbi_image_free(image_data);
 
 	/***************************************************************/
 

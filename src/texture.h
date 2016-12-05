@@ -1,21 +1,24 @@
 #ifndef TEXTURE_H
 #define TEXTURE_H
 
+#include "Angel.h"
 #include <string>
-#include "GL/glew.h"
+
+using namespace std;
 
 class Texture {
 
 	public:
-		Texture();
-	
-		void Bind(unsigned int unit);
+		Texture(const std::string& filename);
+		~Texture();
+
+		inline GLuint GetID() { return m_texID; }
 
 	private:
 		Texture(const Texture& other) {} // copy constructor
 		void operator=(const Texture& other) {}
 
-		GLuint m_texture;
+		GLuint m_texID;
 };
 
 #endif // TEXTURE_H

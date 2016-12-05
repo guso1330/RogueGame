@@ -10,7 +10,7 @@ Object::Object() {
 	last_time=glutGet(GLUT_ELAPSED_TIME);
 }
 
-Object::Object(const char *filename, GLuint nindex, GLint ntex_loc, GLint ncolorLoc, GLint nmatrix_loc) {
+Object::Object(const char *filename, GLuint nindex, GLuint ntex_loc, GLint ncolorLoc, GLint nmatrix_loc) {
 	// Default index is the start (0).
 	index = nindex;
 	m_tex_loc = ntex_loc;
@@ -80,6 +80,11 @@ void Object::DrawSolid()
 	glUniform4f(colorLoc, r, g, b, a);
 	// Setting the ModelView matrix
 	glUniformMatrix4fv(matrix_loc, 1, GL_TRUE, ModelView);
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, m_texture);
+	glUniform1i(m_tex_loc, 0);
+
 	glDrawArrays(GL_TRIANGLES, index, GetVerticesSize());
 }
 
@@ -88,4 +93,11 @@ void Object::DrawWireframe() {
 	glUniformMatrix4fv(matrix_loc, 1, GL_TRUE, ModelView);
 	for(int i = index; i < index+GetVertices().size(); i+=3)
 		glDrawArrays(GL_LINE_LOOP, i, 3);
+}
+
+void Object::SetTexture(GLuint n_texture) {
+	m_texture = n_texture;
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, m_texture);
+	glUniform1i(m_tex_loc, 0);
 }
