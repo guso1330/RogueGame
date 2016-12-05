@@ -27,7 +27,7 @@ void main()
 	// Material properties
 	vec4 MaterialDiffuseColor = texture2D(diffuse, UV);
 	vec4 MaterialAmbientColor = vec4(0.2, 0.2, 0.1, 1.0) * MaterialDiffuseColor;
-	vec4 MaterialSpecularColor = vec4(0.1, 0.1, 0.1, 1.0);
+	vec4 MaterialSpecularColor = vec4(0.8, 0.8, 0.8, 1.0);
 
 	// Distance to the light
 	float distance = length(lightPositionWorldSpace - posWorldSpace);

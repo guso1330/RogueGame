@@ -60,7 +60,8 @@ Object *Player;
 Object *StairsUp;
 Object *StairsDown;
 Object *PlaceholderObject; 
-Object *HostileUnit; 
+Object *HostileUnit;
+Object *light1;
 bool canMove = 1 ;
 
 //Objects
@@ -117,7 +118,7 @@ mat4 projection;
 // Initialize the camera
 float FOV = 70.0f;
 float NEAR = 0.1f;
-float FAR = 100.0f;
+float FAR = 1000.0f;
 Camera camera(vec4(playerX, 10.0f, playerZ*1.0, 0.0f), FOV, ASPECT_RATIO, NEAR, FAR);
 float camera_speed = 0.5f;
 float camera_rotate_speed = (M_PI/180) * 0.5;
@@ -186,12 +187,13 @@ extern "C" void display() {
 	ControlCamera(camera, key, camera_speed, camera_rotate_speed);
 	camera.Update();
 
-	// UPDATE THE LIGHT POSITION BASED ON THE PLAYER POS
-	vec3 PlayerPos = Player->GetPos();
-	lightPos.x=PlayerPos.x;
-	lightPos.y=PlayerPos.y+7.0f;
-	lightPos.z=PlayerPos.z;
-	glUniform4f(lightPositionWorldSpaceLoc, lightPos.x, lightPos.y, lightPos.z, 0.0);
+	// // UPDATE THE LIGHT POSITION BASED ON THE PLAYER POS
+	light1->DrawSolid();
+	// vec3 PlayerPos = Player->GetPos();
+	// lightPos.x=PlayerPos.x;
+	// lightPos.y=PlayerPos.y+7.0f;
+	// lightPos.z=PlayerPos.z;
+	// glUniform4f(lightPositionWorldSpaceLoc, lightPos.x, lightPos.y, lightPos.z, 0.0);
 
 	//
 	// DRAWING
@@ -501,7 +503,7 @@ void GLUTinit() {
 }
 
 void initSound() {
-	sound.PlayLoop("sounds/dungeon.wav");
+	// sound.PlayLoop("sounds/dungeon.wav");
 }
 
 GLuint loadImage(const std::string& filename) {
@@ -529,7 +531,7 @@ GLuint loadImage(const std::string& filename) {
 
 void loadTextures() {
 	Textures.push_back(loadImage("textures/cartoon_floor_texture.jpg")); // Textures[0]
-	Textures.push_back(loadImage("textures/Rock_06_UV_H_CM_1[1].jpg")); // Textures[1]
+	Textures.push_back(loadImage("textures/stone_brick.jpg")); // Textures[1]
 	Textures.push_back(loadImage("textures/wood_plank2.jpg")); // Textures[2]
 }
 
@@ -537,7 +539,7 @@ void initObjects(GLuint tex_loc, GLuint colorLoc, GLint matrix_loc) {
 	//
 	// Build all objects in scene
 	//
-	Cube = new Object("models/cube_5unit.obj", 0, tex_loc, colorLoc, matrix_loc);
+	Cube = new Object("models/cube_5unit_allfaceuvs.obj", 0, tex_loc, colorLoc, matrix_loc);
 	combineVec4Vectors(vertices, Cube->GetVertices());
 	combineVec2Vectors(uvs, Cube->GetUVs());
 	combineVec4Vectors(normals, Cube->GetNormals());
@@ -628,16 +630,6 @@ void init() {
 	program = InitShader("vshader.glsl", "fshader.glsl");
 	glUseProgram(program);
 
-	/****************************************************************/
-	/*						Light variables						*/
-	/****************************************************************/
-	lightPositionWorldSpaceLoc  = glGetUniformLocation(program, "lightPositionWorldSpace");
-	if (lightPositionWorldSpaceLoc == -1) {
-		std::cerr << "Unable to find lightPositionWorldSpace parameter" << std::endl;
-	}
-
-	lightPos = vec4(0.0f,100.0f,0.0f, 0.0f);
-	glUniform4f(lightPositionWorldSpaceLoc, lightPos.x, lightPos.y, lightPos.z, lightPos.w);
 	
 	/****************************************************************/
 	/*						shader variables						*/
@@ -662,8 +654,22 @@ void init() {
 	if(texID == -1) {
 		std::cerr << "Unable to find the texID parameter" << std::endl;
 	}
-	
 
+	/****************************************************************/
+	/*						Light variables						*/
+	/****************************************************************/
+	lightPositionWorldSpaceLoc  = glGetUniformLocation(program, "lightPositionWorldSpace");
+	if (lightPositionWorldSpaceLoc == -1) {
+		std::cerr << "Unable to find lightPositionWorldSpace parameter" << std::endl;
+	}
+
+	light1 = new Object("models/cube.obj", 0, texID, colorLoc, matrix_loc);
+	light1->SetColor(1.0, 1.0, 0.0);
+	light1->Move(vec4(0.0f, 100.0f,0.0f,0.0f));
+
+	lightPos = vec4(0.0f, 100.0f,0.0f, 1.0f);
+	glUniform4f(lightPositionWorldSpaceLoc, lightPos.x, lightPos.y, lightPos.z, lightPos.w);
+	
 	// Initialize the objects
 	initObjects(texID, colorLoc, matrix_loc);
 
