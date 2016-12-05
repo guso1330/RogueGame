@@ -78,6 +78,7 @@ float fx=0.0, fz=0.0;
 // Window dimension constants
 int WIN_W = 1024;
 int WIN_H = 768;
+float ASPECT_RATIO = 1.0*(WIN_W/WIN_H);
 
 // Array for keyboard values
 bool key[255];
@@ -110,7 +111,10 @@ mat4 model_view;
 mat4 projection;
 
 // Initialize the camera
-Camera camera(vec4(playerX, 10.0f, playerZ*1.0, 0.0f), 70.0f, (float)WIN_W/(float)WIN_H, 0.1f, 100.0f);
+float FOV = 70.0f;
+float NEAR = 0.1f;
+float FAR = 100.0f;
+Camera camera(vec4(playerX, 10.0f, playerZ*1.0, 0.0f), FOV, ASPECT_RATIO, NEAR, FAR);
 float camera_speed = 0.5f;
 float camera_rotate_speed = (M_PI/180) * 0.5;
 
@@ -257,6 +261,23 @@ extern "C" void display() {
 	}
 	fz = 0.0;
 	glutSwapBuffers();
+}
+
+extern "C" void resize(int w, int h) {
+	if(h == 0) {
+		h = 1; // prevents a divide by zero
+	}
+
+	ASPECT_RATIO = 1.0*(w / h);
+	camera.SetProjection(Perspective(FOV, ASPECT_RATIO, NEAR, FAR));
+	mat4 projection = camera.GetViewProjection();
+	glUniformMatrix4fv(matrix_loc, 1, GL_TRUE, model_view);
+	glUniformMatrix4fv(projection_loc, 1, GL_TRUE, projection);
+	camera.Update();
+
+	glViewport(0, 0, w, h);
+
+	glutPostRedisplay();
 }
 
 //X AND Z GET SWAPPED WHEN RENDERING, WHAT IS SHOWING IS NOT HOW IT IS IN DATA. 
@@ -452,9 +473,12 @@ void GLUTinit() {
 	glutInitWindowPosition(20,20);
 
 	glutCreateWindow("Rogue Game");
+	// glutFullScreen();
 
 	/* CALLBACKS */
 	glutDisplayFunc(display);
+	// Here is our new entry in the main function
+	glutReshapeFunc(resize);
 	glutIdleFunc(idle);
 	glutKeyboardFunc(keyDown);
 	glutKeyboardUpFunc(keyUp);

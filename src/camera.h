@@ -15,6 +15,7 @@ struct Camera {
 		void Rotate(float angle);
 		void Update();
 
+		inline void SetProjection(mat4 nprojection) { projection = nprojection; }
 		inline void SetPos(vec4 npos) { pos = npos; }
 		inline void SetDir(vec4 ndir) { dir = ndir; }
 		inline void SetYaw(float angle) { yaw = angle; }
