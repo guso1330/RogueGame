@@ -1,3 +1,8 @@
+/***************************
+	Used Quentin's Code
+***************************/
+
+
 // OLD VARIABLES
 varying vec4 fcolor;
 varying vec2 UV;

@@ -1,3 +1,7 @@
+/***************************
+	Used Quentin's Code
+***************************/
+
 attribute vec4 vPosition;
 attribute vec2 vUV;
 attribute vec4 vNormal;
