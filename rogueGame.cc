@@ -493,8 +493,9 @@ GLuint loadImage(const std::string& filename) {
 }
 
 void loadTextures() {
-	Textures.push_back(loadImage("textures/cartoon_floor_texture.jpg"));
-	Textures.push_back(loadImage("textures/Rock_02_UV_H_CM_1.jpg"));
+	Textures.push_back(loadImage("textures/cartoon_floor_texture.jpg")); // Textures[0]
+	Textures.push_back(loadImage("textures/Rock_06_UV_H_CM_1[1].jpg")); // Textures[1]
+	Textures.push_back(loadImage("textures/wood_plank2.jpg")); // Textures[2]
 }
 
 void initObjects(GLuint tex_loc, GLuint colorLoc, GLint matrix_loc) {
@@ -525,13 +526,15 @@ void initObjects(GLuint tex_loc, GLuint colorLoc, GLint matrix_loc) {
 	combineVec4Vectors(vertices, StairsUp->GetVertices());
 	combineVec2Vectors(uvs, StairsUp->GetUVs());
 	combineVec4Vectors(normals, StairsUp->GetNormals());
-	StairsUp->SetColor(0.2, 0.2, 0.2);
+	StairsUp->SetColorAlpha(0.0, 0.0, 0.0, 0.0);
+	StairsUp->SetTexture(Textures[2]);
 
 	StairsDown = new Object("models/StairsUp.obj", incrementIndex(NUMVERTICES, StairsUp->GetVerticesSize()), tex_loc, colorLoc, matrix_loc);
 	combineVec4Vectors(vertices, StairsDown->GetVertices());
 	combineVec2Vectors(uvs, StairsDown->GetUVs());
 	combineVec4Vectors(normals, StairsDown->GetNormals());
-	StairsDown->SetColor(0.2, 0.2, 0.2);
+	StairsDown->SetColorAlpha(0.0, 0.0, 0.0, 0.0);
+	StairsDown->SetTexture(Textures[2]);
 
 	//default object id, used 
 	PlaceholderObject = new Object("models/cube.obj", incrementIndex(NUMVERTICES, StairsDown->GetVerticesSize()), tex_loc, colorLoc, matrix_loc);
