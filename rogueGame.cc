@@ -78,7 +78,7 @@ float fx=0.0, fz=0.0;
 // Window dimension constants
 int WIN_W = 1024;
 int WIN_H = 768;
-float ASPECT_RATIO = 1.0*(WIN_W/WIN_H);
+float ASPECT_RATIO = 1.0*((float)WIN_W/(float)WIN_H);
 
 // Array for keyboard values
 bool key[255];
@@ -98,6 +98,10 @@ vector<vec4> normals;
 vector<GLuint> Textures; // Container to hold all of the textures
 GLuint texBufferID;
 GLuint texID;
+
+// LIGHT VARIABLES
+GLint lightPositionWorldSpaceLoc;
+vec4 lightPos;
 
 // Uniform variables
 GLuint program;
@@ -268,7 +272,7 @@ extern "C" void resize(int w, int h) {
 		h = 1; // prevents a divide by zero
 	}
 
-	ASPECT_RATIO = 1.0*(w / h);
+	ASPECT_RATIO = 1.0*((float)w /(float)h);
 	camera.SetProjection(Perspective(FOV, ASPECT_RATIO, NEAR, FAR));
 	mat4 projection = camera.GetViewProjection();
 	glUniformMatrix4fv(matrix_loc, 1, GL_TRUE, model_view);
@@ -473,7 +477,7 @@ void GLUTinit() {
 	glutInitWindowPosition(20,20);
 
 	glutCreateWindow("Rogue Game");
-	// glutFullScreen();
+	glutFullScreen();
 
 	/* CALLBACKS */
 	glutDisplayFunc(display);
@@ -490,7 +494,7 @@ void GLUTinit() {
 }
 
 void initSound() {
-	// sound.PlayLoop("sounds/getout.ogg");
+	sound.PlayLoop("sounds/dungeon.wav");
 }
 
 GLuint loadImage(const std::string& filename) {
@@ -608,6 +612,7 @@ void initObjects(GLuint tex_loc, GLuint colorLoc, GLint matrix_loc) {
 
 void init() {
 
+
 	loadTextures();
 
 	GLint colorLoc;
@@ -615,6 +620,17 @@ void init() {
 	// get shader program
 	program = InitShader("vshader.glsl", "fshader.glsl");
 	glUseProgram(program);
+
+	/****************************************************************/
+	/*						Light variables						*/
+	/****************************************************************/
+	lightPositionWorldSpaceLoc  = glGetUniformLocation(program, "lightPositionWorldSpace");
+	if (lightPositionWorldSpaceLoc == -1) {
+		std::cerr << "Unable to find lightPositionWorldSpace parameter" << std::endl;
+	}
+
+	lightPos = vec4(0.0f,10.0f,0.0f, 0.0f);
+	glUniform4f(lightPositionWorldSpaceLoc, lightPos.x, lightPos.y, lightPos.z, lightPos.w);
 	
 	/****************************************************************/
 	/*						shader variables						*/
