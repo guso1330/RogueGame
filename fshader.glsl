@@ -16,13 +16,13 @@ uniform vec4 lightPositionWorldSpace;
 void main() 
 {
 
-	vec4 LightColor = vec4(0.5f, 0.5f, 0.1f, 1.0f);
-	float LightPower = 1000.0f;
+	vec4 LightColor = vec4(0.8f, 0.3f, 0.1f, 1.0f);
+	float LightPower = 50.0f;
 
 	// Material properties
 	vec4 MaterialDiffuseColor = texture2D(diffuse, UV);
-	vec4 MaterialAmbientColor = vec4(0.1, 0.1, 0.1, 1.0) * MaterialDiffuseColor;
-	vec4 MaterialSpecularColor = vec4(0.3, 0.3, 0.3, 1.0);
+	vec4 MaterialAmbientColor = vec4(0.2, 0.2, 0.1, 1.0) * MaterialDiffuseColor;
+	vec4 MaterialSpecularColor = vec4(0.1, 0.1, 0.1, 1.0);
 
 	// Distance to the light
 	float distance = length(lightPositionWorldSpace - posWorldSpace);
@@ -42,6 +42,7 @@ void main()
 	vec4 E = normalize(eyeDirectionCameraSpace);
 	// Direction in which the triangle reflects the light
 	vec4 R = reflect(-l,n);
+
 	// Cosine of the angle between the Eye vector and the Reflect vector,
 	// clamped to 0
 	//  - Looking into the reflection -> 1

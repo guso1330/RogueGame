@@ -186,6 +186,13 @@ extern "C" void display() {
 	ControlCamera(camera, key, camera_speed, camera_rotate_speed);
 	camera.Update();
 
+	// UPDATE THE LIGHT POSITION BASED ON THE PLAYER POS
+	vec3 PlayerPos = Player->GetPos();
+	lightPos.x=PlayerPos.x;
+	lightPos.y=PlayerPos.y+7.0f;
+	lightPos.z=PlayerPos.z;
+	glUniform4f(lightPositionWorldSpaceLoc, lightPos.x, lightPos.y, lightPos.z, 0.0);
+
 	//
 	// DRAWING
 	//
@@ -629,7 +636,7 @@ void init() {
 		std::cerr << "Unable to find lightPositionWorldSpace parameter" << std::endl;
 	}
 
-	lightPos = vec4(0.0f,10.0f,0.0f, 0.0f);
+	lightPos = vec4(0.0f,100.0f,0.0f, 0.0f);
 	glUniform4f(lightPositionWorldSpaceLoc, lightPos.x, lightPos.y, lightPos.z, lightPos.w);
 	
 	/****************************************************************/
