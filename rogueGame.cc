@@ -316,10 +316,11 @@ extern "C" void resize(int w, int h) {
 
 void makeNextFloor()
 {
+	cout << "Make new floor" << endl;
 	Floor new_floor;
 	for(int x = 0; x < new_floor.x_dim; ++x) {
 		for(int y = 0; y < new_floor.y_dim; ++y) {
-			if(new_floor.floor_map[y][x].get_block_id() == 10) {
+			if(new_floor.floor_map[x][y].get_block_id() == 10) {
 				playerX = x;
 				playerZ = y;					
 			}
@@ -331,6 +332,7 @@ void makeNextFloor()
 	//sleep(1);
 
 	lvl_floor = new_floor;
+	cout << "Made new floor" << endl;
 }
 
 bool checkCol(int toCheck)
@@ -373,7 +375,7 @@ extern "C" void SpecialKeys(int key, int x, int y)
 			std:: cout << "Move player up. " << std::endl;
 			sound.PlaySound("sounds/footsteps.wav");
 			// if((playerX > 0) && (playerX < lvl_floor.x_dim) && (playerZ > 0) && (playerZ < lvl_floor.y_dim))
-				if(checkCol(lvl_floor.floor_map[playerZ][playerX -1].get_block_id())){
+				if(checkCol(lvl_floor.floor_map[playerZ][playerX - 1].get_block_id())){
 					std::cout << "Can move" << std:: endl;
 					playerX = playerX - 1;
 					std::cout << "Did move" << std:: endl;

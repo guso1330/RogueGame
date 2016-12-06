@@ -2,14 +2,21 @@
 #include <iostream>
 #include <fstream>
 #include <utility>
-#define SPAWNER_DENOM 95 //was 65
-#define DIM_SLACK 35 //was 35
-#define DIM_MIN 24  //was 15
+
+//
+// Macros
+//
+#define SPAWNER_DENOM 95
+#define DIM_SLACK 35
+#define DIM_MIN 24
 #define ROOM_SIZE_SCALE .0014
 #define ROOM_SPAWNER_PADDING 8
 #define OBJECT_DENSITY .15 
 #define HOSTILE_DENSITY .05
-//Block Content Macros: 
+
+//
+// Block Content Macros
+//
 #define EMPTY 0
 #define CHAIR 1
 #define TABLE 2
@@ -17,15 +24,26 @@
 #define RUBBLE 4
 #define BONFIRE 5
 #define NUM_ITEMS 5  //number of items excluding EMPTY
+
+Floor::Floor()
+{
+	generate_dims();
+	calculate_room_spawners();
+	calculate_max_room_size();
+	resize_floor_map();
+	place_room_spawners();
+	generate_stairs();
+	save_floor("output");
+}
+
 void Floor::generate_dims()
 {
 	srand(time(NULL));
-	x_dim = rand() % DIM_SLACK + DIM_MIN;		//from size 15 to 40
-	y_dim = rand() % DIM_SLACK + DIM_MIN;
+	x_dim = rand() % DIM_SLACK + DIM_MIN; // Can be [35, 24]
+	y_dim = rand() % DIM_SLACK + DIM_MIN; // Can be between [35, 24]
 
-	//swapped to both dims using the same value as a segfault work-around 
-
-	std::cout << "X-dim = " << y_dim << std::endl;
+	// swapped to both dims using the same value as a segfault work-around 
+	std::cout << "X-dim = " << x_dim << std::endl;
 	std::cout << "Y-dim = " << y_dim << std::endl;
 }
 
@@ -33,7 +51,7 @@ void Floor::calculate_room_spawners()
 {
 	total_blocks = x_dim * y_dim;
 	std::cout << "Total Blocks = " << total_blocks << std::endl;
-	num_room_spawners = total_blocks / SPAWNER_DENOM; 
+	num_room_spawners = total_blocks / SPAWNER_DENOM; // total_blocks / floor(95)
 	std:: cout << "Total Room Spawners = " << num_room_spawners << std::endl;
 }
 
@@ -46,7 +64,7 @@ void Floor::calculate_max_room_size()
 void Floor::resize_floor_map()
 {
 	floor_map.resize(x_dim);
-	for(int i = 0; i < x_dim; ++i)
+	for(int i = 0; i < floor_map.size(); ++i)
 		floor_map[i].resize(y_dim);
 }
 
@@ -95,6 +113,7 @@ void Floor::connect_rooms(int x1, int y1, int x2, int y2)
 
 void Floor::generate_objects(int x1, int y1, int x2, int y2)
 {
+	cout << "generating hostile units" << endl;
 	//std::cout << "Generating objects in the space [" << x1 << "][" << y1 << "] to [" << x2 << "][" << y2 << "]" << std::endl;
 	//total area of room:
 	int area;
@@ -130,11 +149,12 @@ void Floor::generate_objects(int x1, int y1, int x2, int y2)
 		floor_map[rand_x][rand_y].set_block_content_id(object_id_to_place);
 
 	}
-
+	cout << "end generating hostile units" << endl;
 }
 
 void Floor::generate_hostile_units(int x1, int y1, int x2, int y2)
 {
+	cout << "generating hostile units" << endl;
 	int area; 
 	int x_temp;
 	int y_temp; 
@@ -152,25 +172,27 @@ void Floor::generate_hostile_units(int x1, int y1, int x2, int y2)
 
 		rand_x = (rand() % x_temp) + x1;
 		rand_y = (rand() % y_temp) + y1;
-
+		cout << " floor 155" << endl;
 		if(floor_map[rand_x][rand_y].get_block_content_id() == 0){
 			cout << "Placed Hostile." << std:: endl;
 			coord cur_coord;
 			cur_coord.x_coord = rand_x;
 			cur_coord.y_coord = rand_y;
 			hostile_unit_pos.push_back(cur_coord);
+			cout << "floor 162" << endl;
 			floor_map[rand_x][rand_y].set_has_hostile(1);
 			//hostile_unit_pos.x_coord.push_back(rand_x);
 			//hostile_unit_pos.y_coord.push_back(rand_y);
 			++counter;
 		}
 	}
-
+	cout << "end generating hostile units" << endl;
 
 }
 
 void Floor::generate_room(int x, int y)
 {
+	cout << "generating new room" << endl;
 	//size of this room
 	int this_room_size;
 	this_room_size = rand() % (max_room_size - 1) + 1;
@@ -195,6 +217,7 @@ void Floor::generate_room(int x, int y)
 	y2 = y + this_room_size;
 	generate_objects(x1,y1,x2,y2);	
 	generate_hostile_units(x1,y1,x2,y2);
+	cout << "end generating room" << endl;
 }
 
 void Floor::place_room_spawners()
@@ -202,9 +225,9 @@ void Floor::place_room_spawners()
 	std::cout << "Placing room spawners." << std::endl;
 	int room_x, room_y;
 	int last_room_x, last_room_y;	
-	for(int room_counter = 0; room_counter < num_room_spawners; room_counter ++)
+	for(int room_counter = 0; room_counter < num_room_spawners; ++room_counter)
 	{
-		if(room_counter > 0)
+		if(room_counter > 0) // When the room_x and room_y have been set
 		{
 			last_room_x = room_x;
 			last_room_y = room_y;
@@ -232,7 +255,7 @@ void Floor::place_room_spawners()
 		}
 		//std::cout << "Room #" << room_counter << " placed at ("
 		//<< room_x << "," << room_y << "). " << std::endl;
-		cout << "235" << endl;
+		cout << "Floor 235" << endl;
 		floor_map[room_x][room_y].set_block_id(1); 
 		//std::cout << "floor_map[" << room_x << "][" << room_y << "] set to spawner block." << std::endl;
 		generate_room(room_x, room_y);
@@ -243,12 +266,14 @@ void Floor::place_room_spawners()
 				connect_rooms(last_room_x, last_room_y, room_x, room_y);
 
 		}
+		cout << "Finished placing room spawners" << endl;
 	}
 
 }
 
 void Floor::save_floor(string name)
 {
+	cout << "Save floor to file" << endl;
 	ofstream myFile;
 	myFile.open("./output.txt");
 
@@ -298,10 +323,12 @@ void Floor::save_floor(string name)
 		myFile << "\n";
 	}
 	myFile.close();
+	cout << "Save floor to file" << endl;
 }
 
 void Floor::generate_stairs()
 {
+	cout << "Generating Stairs" << endl;
 	//find room generator nodes
 	vector<int> x_vec;
 	vector<int> y_vec;
@@ -332,6 +359,7 @@ void Floor::generate_stairs()
 
 	//place exit stairs
 	floor_map[x_vec[end_stair]][y_vec[end_stair]].set_block_id(11);
+	cout << "Finished Generating Stairs" << endl;
 }
 
 void Floor::move_enemy(int new_x, int new_y, int hostile_index)
@@ -348,14 +376,4 @@ void Floor::move_enemy(int new_x, int new_y, int hostile_index)
 	cout << "enemy at " << at_x <<" , " << at_y << " = " << floor_map[at_x][at_y].get_has_hostile() << std:: endl;
 	floor_map[new_x][new_y].set_has_hostile(1); 
 	cout << "enemy at " << new_x <<" , " << new_y << " = " << floor_map[new_x][new_y].get_has_hostile() << std:: endl;*/
-}
-Floor::Floor()
-{
-	generate_dims();
-	calculate_room_spawners();
-	calculate_max_room_size();
-	resize_floor_map();
-	place_room_spawners();
-	generate_stairs();
-	save_floor("output");
 }
