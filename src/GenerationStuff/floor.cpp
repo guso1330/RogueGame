@@ -251,18 +251,18 @@ void Floor::save_floor(string name)
 	ofstream myFile;
 	myFile.open("./output.txt");
 
-	for(int i = 0; i < y_dim; i++)
+	for(int i = 0; i < x_dim; i++)
 	{
-		for(int j = 0; j < x_dim; j++)
+		for(int j = 0; j < y_dim; j++)
 		{
 			int cur_id; 
-			cur_id = floor_map[j][i].get_block_id();
+			cur_id = floor_map[i][j].get_block_id();
 			
 			switch(cur_id)
 			{
 				case 0:
-					if(floor_map[j][i].get_block_content_id()!= 0)
-						myFile << floor_map[j][i].get_block_content_id();
+					if(floor_map[i][j].get_block_content_id()!= 0)
+						myFile << floor_map[i][j].get_block_content_id();
 						else{
 							myFile << "▓";
 						}
@@ -278,8 +278,8 @@ void Floor::save_floor(string name)
 					//myFile << "2";
 					break;
 				case 3:
-					if(floor_map[j][i].get_block_content_id()!= 0)
-						myFile << floor_map[j][i].get_block_content_id();
+					if(floor_map[i][j].get_block_content_id()!= 0)
+						myFile << floor_map[i][j].get_block_content_id();
 						else{
 							myFile << "█";
 						}
