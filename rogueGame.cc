@@ -188,12 +188,11 @@ extern "C" void display() {
 	camera.Update();
 
 	// // UPDATE THE LIGHT POSITION BASED ON THE PLAYER POS
-	light1->DrawSolid();
-	// vec3 PlayerPos = Player->GetPos();
-	// lightPos.x=PlayerPos.x;
-	// lightPos.y=PlayerPos.y+7.0f;
-	// lightPos.z=PlayerPos.z;
-	// glUniform4f(lightPositionWorldSpaceLoc, lightPos.x, lightPos.y, lightPos.z, 0.0);
+	vec3 PlayerPos = Player->GetPos();
+	lightPos.x=PlayerPos.x;
+	lightPos.y=PlayerPos.y+7.0f;
+	lightPos.z=PlayerPos.z;
+	glUniform4f(lightPositionWorldSpaceLoc, lightPos.x, lightPos.y, lightPos.z, 0.0);
 
 	//
 	// DRAWING
@@ -662,13 +661,6 @@ void init() {
 	if (lightPositionWorldSpaceLoc == -1) {
 		std::cerr << "Unable to find lightPositionWorldSpace parameter" << std::endl;
 	}
-
-	light1 = new Object("models/cube.obj", 0, texID, colorLoc, matrix_loc);
-	light1->SetColor(1.0, 1.0, 0.0);
-	light1->Move(vec4(0.0f, 100.0f,0.0f,0.0f));
-
-	lightPos = vec4(0.0f, 100.0f,0.0f, 1.0f);
-	glUniform4f(lightPositionWorldSpaceLoc, lightPos.x, lightPos.y, lightPos.z, lightPos.w);
 	
 	// Initialize the objects
 	initObjects(texID, colorLoc, matrix_loc);

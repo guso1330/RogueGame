@@ -22,7 +22,7 @@ void main()
 {
 
 	vec4 LightColor = vec4(0.8f, 0.3f, 0.1f, 1.0f);
-	float LightPower = 50.0f;
+	float LightPower = 100.0f;
 
 	// Material properties
 	vec4 MaterialDiffuseColor = texture2D(diffuse, UV);
