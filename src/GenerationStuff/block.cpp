@@ -5,7 +5,7 @@ block::block()
 {
 	block_id = 0;     //Initialize new blocks to empty & non-solid
 	is_solid = 0;
-	is_found = 1;
+	is_found = 0;
 	has_hostile = 0;
 }
 

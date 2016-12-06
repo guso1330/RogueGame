@@ -137,12 +137,12 @@ float camera_rotate_speed = (M_PI/180) * 0.5;
 void updateFound(int x, int z)
 {
 	if(x >= 0)
-		if(x < lvl_floor.x_dim)
+		//if(x < lvl_floor.x_dim)
 			if(z >= 0){
-				if(z < lvl_floor.y_dim){
+				//if(z < lvl_floor.y_dim){
 					cout << "Updating " << x << "," << z << "to found. " << endl;
 					lvl_floor.floor_map[z][x].is_found = 1; 
-				}
+				//}
 			}
 }
 
@@ -319,7 +319,7 @@ void makeNextFloor()
 	Floor new_floor;
 	for(int x = 0; x < new_floor.x_dim; ++x) {
 		for(int y = 0; y < new_floor.y_dim; ++y) {
-			if(new_floor.floor_map[x][y].get_block_id() == 10) {
+			if(new_floor.floor_map[y][x].get_block_id() == 10) {
 				playerX = x;
 				playerZ = y;					
 			}
