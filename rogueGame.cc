@@ -366,76 +366,133 @@ void process_hostile_moves()
 	}*/
 }
 
+// extern "C" void SpecialKeys(int key, int x, int y)
+// {
+// 	switch(key)
+// 	{
+
+// 		case GLUT_KEY_UP:
+// 			std:: cout << "Move player up. " << std::endl;
+// 			sound.PlaySound("sounds/footsteps.wav");
+// 			// if((playerX > 0) && (playerX < lvl_floor.x_dim) && (playerZ > 0) && (playerZ < lvl_floor.y_dim))
+// 				if(checkCol(lvl_floor.floor_map[playerZ][playerX - 1].get_block_id())){
+// 					std::cout << "Can move" << std:: endl;
+// 					playerX = playerX - 1;
+// 					std::cout << "Did move" << std:: endl;
+// 					updateCluster(playerX,playerZ);
+// 					std::cout << "Updated local cluster" << std:: endl;
+// 					process_hostile_moves();
+// 				}
+// 			camera.SetPos(vec4(playerX*5 +15.0f, 45.0f, playerZ*5, 0.0f));
+// 			std:: cout << "Player at : " << playerX << "," << playerZ << std:: endl;
+// 			// std:: cout << "Floor type under player is: " << lvl_floor.floor_map[playerX][playerZ].get_block_id() << std:: endl;
+			
+// 			break;
+// 		case GLUT_KEY_LEFT:
+// 			std:: cout << "Move player left. " << std::endl;
+// 			sound.PlaySound("sounds/footsteps.wav");
+// 			// if((playerX > 0) && (playerX < lvl_floor.x_dim) && (playerZ > 0) && (playerZ < lvl_floor.y_dim))
+// 				if(checkCol(lvl_floor.floor_map[playerZ +1][playerX].get_block_id())){
+// 					std::cout << "Can move" << std:: endl;
+// 					playerZ = playerZ + 1; 
+// 					std::cout << "Did move" << std:: endl;
+// 					updateCluster(playerX,playerZ);
+// 					std::cout << "Updated local cluster" << std:: endl;
+// 					process_hostile_moves();
+// 				}
+// 			camera.SetPos(vec4(playerX*5 +15.0f, 45.0f, playerZ*5, 0.0f));
+// 			std:: cout << "Player at : " << playerX << "," << playerZ << std:: endl;
+// 			// std:: cout << "Floor type under player is: " << lvl_floor.floor_map[playerX][playerZ].get_block_id() << std:: endl;
+			
+// 			break;
+// 		case GLUT_KEY_RIGHT:
+// 			std:: cout << "Move player right. " << std::endl;
+// 			sound.PlaySound("sounds/footsteps.wav");
+// 			// if((playerX > 0) && (playerX < lvl_floor.x_dim) && (playerZ > 0) && (playerZ < lvl_floor.y_dim))
+// 				if(checkCol(lvl_floor.floor_map[playerZ - 1][playerX].get_block_id())){
+// 					std::cout << "Can move" << std:: endl;
+// 					playerZ = playerZ - 1;
+// 					std::cout << "Did move" << std:: endl;
+// 					updateCluster(playerX,playerZ);
+// 					std::cout << "Updated local cluster" << std:: endl;
+// 					process_hostile_moves();
+// 				}
+// 			camera.SetPos(vec4(playerX*5 +15.0f, 45.0f, playerZ*5, 0.0f));
+// 			std:: cout << "Player at : " << playerX << "," << playerZ << std:: endl;
+			
+// 			break;
+// 		case GLUT_KEY_DOWN:
+// 			std:: cout << "Move player down. " << std::endl;
+// 			sound.PlaySound("sounds/footsteps.wav");
+// 			// if((playerX > 0) && (playerX < lvl_floor.x_dim) && (playerZ > 0) && (playerZ < lvl_floor.y_dim))
+// 				if(checkCol(lvl_floor.floor_map[playerZ][playerX +1].get_block_id())){
+// 					std::cout << "Can move" << std:: endl;
+// 					playerX = playerX + 1;
+// 					std::cout << "Did move" << std:: endl;
+// 					updateCluster(playerX,playerZ);
+// 					std::cout << "Updated local cluster" << std:: endl;
+// 					process_hostile_moves();
+// 				}
+// 			camera.SetPos(vec4(playerX*5 +15.0f, 45.0f, playerZ*5, 0.0f));
+// 			std:: cout << "Player at : " << playerX << "," << playerZ << std:: endl;
+
+// 			break;	
+// 	}
+
+// 	glutPostRedisplay();
+
+// }
+
+void process_move(int &player_x, int &player_z) {
+	std::cout << "Can move" << std:: endl;
+	std::cout << "Did move" << std:: endl;
+	updateCluster(player_x, player_z);
+	std::cout << "Updated local cluster" << std:: endl;
+	process_hostile_moves();
+}
+
 extern "C" void SpecialKeys(int key, int x, int y)
 {
+	if(key == GLUT_KEY_UP || key == GLUT_KEY_DOWN || key == GLUT_KEY_RIGHT || key == GLUT_KEY_LEFT) {
+		sound.PlaySound("sounds/footsteps.wav");
+	}
 	switch(key)
 	{
-
 		case GLUT_KEY_UP:
 			std:: cout << "Move player up. " << std::endl;
-			sound.PlaySound("sounds/footsteps.wav");
-			// if((playerX > 0) && (playerX < lvl_floor.x_dim) && (playerZ > 0) && (playerZ < lvl_floor.y_dim))
-				if(checkCol(lvl_floor.floor_map[playerZ][playerX - 1].get_block_id())){
-					std::cout << "Can move" << std:: endl;
-					playerX = playerX - 1;
-					std::cout << "Did move" << std:: endl;
-					updateCluster(playerX,playerZ);
-					std::cout << "Updated local cluster" << std:: endl;
-					process_hostile_moves();
-				}
+			if(checkCol(lvl_floor.floor_map[playerZ][playerX - 1].get_block_id())){
+				playerX -= 1;
+				process_move(playerX, playerZ);
+			}
 			camera.SetPos(vec4(playerX*5 +15.0f, 45.0f, playerZ*5, 0.0f));
 			std:: cout << "Player at : " << playerX << "," << playerZ << std:: endl;
-			// std:: cout << "Floor type under player is: " << lvl_floor.floor_map[playerX][playerZ].get_block_id() << std:: endl;
-			
 			break;
 		case GLUT_KEY_LEFT:
 			std:: cout << "Move player left. " << std::endl;
-			sound.PlaySound("sounds/footsteps.wav");
-			// if((playerX > 0) && (playerX < lvl_floor.x_dim) && (playerZ > 0) && (playerZ < lvl_floor.y_dim))
-				if(checkCol(lvl_floor.floor_map[playerZ +1][playerX].get_block_id())){
-					std::cout << "Can move" << std:: endl;
-					playerZ = playerZ + 1; 
-					std::cout << "Did move" << std:: endl;
-					updateCluster(playerX,playerZ);
-					std::cout << "Updated local cluster" << std:: endl;
-					process_hostile_moves();
-				}
+			if(checkCol(lvl_floor.floor_map[playerZ + 1][playerX].get_block_id())) {
+				playerZ += 1;
+				process_move(playerX, playerZ);
+			}
 			camera.SetPos(vec4(playerX*5 +15.0f, 45.0f, playerZ*5, 0.0f));
 			std:: cout << "Player at : " << playerX << "," << playerZ << std:: endl;
-			// std:: cout << "Floor type under player is: " << lvl_floor.floor_map[playerX][playerZ].get_block_id() << std:: endl;
-			
 			break;
 		case GLUT_KEY_RIGHT:
 			std:: cout << "Move player right. " << std::endl;
-			sound.PlaySound("sounds/footsteps.wav");
-			// if((playerX > 0) && (playerX < lvl_floor.x_dim) && (playerZ > 0) && (playerZ < lvl_floor.y_dim))
-				if(checkCol(lvl_floor.floor_map[playerZ - 1][playerX].get_block_id())){
-					std::cout << "Can move" << std:: endl;
-					playerZ = playerZ - 1;
-					std::cout << "Did move" << std:: endl;
-					updateCluster(playerX,playerZ);
-					std::cout << "Updated local cluster" << std:: endl;
-					process_hostile_moves();
-				}
+			if(checkCol(lvl_floor.floor_map[playerZ - 1][playerX].get_block_id())) {
+				playerZ -= 1;
+				process_move(playerX, playerZ);
+			}
 			camera.SetPos(vec4(playerX*5 +15.0f, 45.0f, playerZ*5, 0.0f));
 			std:: cout << "Player at : " << playerX << "," << playerZ << std:: endl;
-			
 			break;
 		case GLUT_KEY_DOWN:
 			std:: cout << "Move player down. " << std::endl;
-			sound.PlaySound("sounds/footsteps.wav");
-			// if((playerX > 0) && (playerX < lvl_floor.x_dim) && (playerZ > 0) && (playerZ < lvl_floor.y_dim))
-				if(checkCol(lvl_floor.floor_map[playerZ][playerX +1].get_block_id())){
-					std::cout << "Can move" << std:: endl;
-					playerX = playerX + 1;
-					std::cout << "Did move" << std:: endl;
-					updateCluster(playerX,playerZ);
-					std::cout << "Updated local cluster" << std:: endl;
-					process_hostile_moves();
-				}
+			if(checkCol(lvl_floor.floor_map[playerZ][playerX +1].get_block_id())) {
+				playerX += 1;
+				process_move(playerX, playerZ);
+			}
 			camera.SetPos(vec4(playerX*5 +15.0f, 45.0f, playerZ*5, 0.0f));
 			std:: cout << "Player at : " << playerX << "," << playerZ << std:: endl;
-
 			break;	
 	}
 
