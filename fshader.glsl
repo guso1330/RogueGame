@@ -1,12 +1,11 @@
 /***************************
 	Used Quentin's Code
 ***************************/
-
-
 // OLD VARIABLES
 varying vec4 fcolor;
 varying vec2 UV;
 uniform sampler2D diffuse;
+uniform sampler2D normalTex;
 
 // NEW VARIABLES
 varying vec4 posWorldSpace;
@@ -22,18 +21,21 @@ void main()
 {
 
 	vec4 LightColor = vec4(0.8f, 0.3f, 0.1f, 1.0f);
-	float LightPower = 50.0f;
+	float LightPower = 100.0f;
 
 	// Material properties
 	vec4 MaterialDiffuseColor = texture2D(diffuse, UV);
 	vec4 MaterialAmbientColor = vec4(0.2, 0.2, 0.1, 1.0) * MaterialDiffuseColor;
 	vec4 MaterialSpecularColor = vec4(0.8, 0.8, 0.8, 1.0);
 
+	// Get normal tanget
+	vec4 tangentSpaceNormalTexture = normalize(texture2D(normalTex, (vec2(UV.x , UV.y) )));
+
 	// Distance to the light
 	float distance = length(lightPositionWorldSpace - posWorldSpace);
 
 	// Normal of the computed fragment, in camera space
-	vec4 n = normalize(normalCameraSpace);
+	vec4 n = tangentSpaceNormalTexture;
 	// Direction of the light (from the fragment to the light)
 	vec4 l = normalize(lightDirectionCameraSpace);
 	// Cosine of the angle between the normal and the light direction, 
@@ -63,13 +65,4 @@ void main()
 		MaterialSpecularColor * LightColor * LightPower * pow(cosAlpha,5) / (distance*distance);
 
 	gl_FragColor = color + fcolor;
-
-
-
-// OLD STUFF
-	// vec4 UVcolor = texture2D(diffuse, UV);
-	// vec4 color = fcolor + UVcolor;
-
-	// gl_FragColor = color;
-	// gl_FragColor = fcolor;
 } 

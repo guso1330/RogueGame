@@ -10,11 +10,12 @@ Object::Object() {
 	last_time=glutGet(GLUT_ELAPSED_TIME);
 }
 
-Object::Object(const char *filename, GLuint nindex, GLuint ntex_loc, GLint ncolorLoc, GLint nmatrix_loc) {
+Object::Object(const char *filename, GLuint nindex, GLuint ntex_loc, GLuint nnormal_tex_loc, GLint ncolorLoc, GLint nmatrix_loc) {
 	// Default index is the start (0).
 	index = nindex;
 	m_tex_loc = ntex_loc;
 	matrix_loc = nmatrix_loc;
+	m_normal_tex_loc = nnormal_tex_loc;
 	colorLoc = ncolorLoc;
 	InitMesh(filename);
 	x = y = z = 0.0;
@@ -81,9 +82,15 @@ void Object::DrawSolid()
 	// Setting the ModelView matrix
 	glUniformMatrix4fv(matrix_loc, 1, GL_TRUE, ModelView);
 
+	// Send the regular texture
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, m_texture);
 	glUniform1i(m_tex_loc, 0);
+
+	// Send the normal texture
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, m_normal_texture);
+	glUniform1i(m_normal_tex_loc, 1);
 
 	glDrawArrays(GL_TRIANGLES, index, GetVerticesSize());
 }
@@ -100,4 +107,11 @@ void Object::SetTexture(GLuint n_texture) {
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, m_texture);
 	glUniform1i(m_tex_loc, 0);
+}
+
+void Object::SetNormalTexture(GLuint n_normal_texture) {
+	m_normal_texture = n_normal_texture;
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, m_normal_texture);
+	glUniform1i(m_normal_tex_loc, 0);
 }

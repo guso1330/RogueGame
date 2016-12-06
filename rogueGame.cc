@@ -94,11 +94,16 @@ GLfloat  Theta[NumAxes] = {0.0, 0.0, 0.0};
 vector<vec4> vertices;
 vector<vec2> uvs;
 vector<vec4> normals;
+vector<vec4> tangents;
+vector<vec4> bitangents;
 
 // TEXTURE VARIABLES
 vector<GLuint> Textures; // Container to hold all of the textures
 GLuint texBufferID;
 GLuint texID;
+
+vector<GLuint> NormalTextures;
+GLuint normalTexID;
 
 // LIGHT VARIABLES
 GLint lightPositionWorldSpaceLoc;
@@ -106,9 +111,11 @@ vec4 lightPos;
 
 // Uniform variables
 GLuint program;
+GLuint loc;
 GLuint uv_loc;
 GLuint normal_loc;
-GLuint loc;
+GLuint tangents_loc;
+GLuint bitangents_loc;
 GLint matrix_loc, projection_loc;
 
 // Declaring the projection and model view
@@ -188,12 +195,12 @@ extern "C" void display() {
 	camera.Update();
 
 	// // UPDATE THE LIGHT POSITION BASED ON THE PLAYER POS
-	light1->DrawSolid();
-	// vec3 PlayerPos = Player->GetPos();
-	// lightPos.x=PlayerPos.x;
-	// lightPos.y=PlayerPos.y+7.0f;
-	// lightPos.z=PlayerPos.z;
-	// glUniform4f(lightPositionWorldSpaceLoc, lightPos.x, lightPos.y, lightPos.z, 0.0);
+	// light1->DrawSolid();
+	vec3 PlayerPos = Player->GetPos();
+	lightPos.x=PlayerPos.x;
+	lightPos.y=PlayerPos.y+7.0f;
+	lightPos.z=PlayerPos.z;
+	glUniform4f(lightPositionWorldSpaceLoc, lightPos.x, lightPos.y, lightPos.z, 0.0);
 
 	//
 	// DRAWING
@@ -503,7 +510,7 @@ void GLUTinit() {
 }
 
 void initSound() {
-	// sound.PlayLoop("sounds/dungeon.wav");
+	sound.PlayLoop("sounds/dungeon.wav");
 }
 
 GLuint loadImage(const std::string& filename) {
@@ -533,91 +540,165 @@ void loadTextures() {
 	Textures.push_back(loadImage("textures/cartoon_floor_texture.jpg")); // Textures[0]
 	Textures.push_back(loadImage("textures/stone_brick.jpg")); // Textures[1]
 	Textures.push_back(loadImage("textures/wood_plank2.jpg")); // Textures[2]
+	Textures.push_back(loadImage("textures/default_normal.jpg")); // Textures[3] DEFAULT NORMAL
+	Textures.push_back(loadImage("textures/cartoon_floor_texture_nm.png")); // Textures[4] floor NORMAL
+	Textures.push_back(loadImage("textures/stone_brick_nm.png")); // Textures[5] Wall normal
+	Textures.push_back(loadImage("textures/wood_plank2_nm.png")); // Textures[6] Stair normal
 }
 
-void initObjects(GLuint tex_loc, GLuint colorLoc, GLint matrix_loc) {
+void initObjects(GLuint tex_loc, GLuint nm_tex_loc, GLuint colorLoc, GLint matrix_loc) {
 	//
 	// Build all objects in scene
 	//
-	Cube = new Object("models/cube_5unit_allfaceuvs.obj", 0, tex_loc, colorLoc, matrix_loc);
+	Cube = new Object("models/cube_5unit_allfaceuvs.obj", 0, tex_loc, nm_tex_loc, colorLoc, matrix_loc);
 	combineVec4Vectors(vertices, Cube->GetVertices());
 	combineVec2Vectors(uvs, Cube->GetUVs());
 	combineVec4Vectors(normals, Cube->GetNormals());
 	Cube->SetColorAlpha(0.0, 0.0, 0.0, 0.0);
 	Cube->SetTexture(Textures[1]);
+	Cube->SetNormalTexture(Textures[5]);
 
-	floor_tile = new Object("models/plane_5unit.obj", incrementIndex(NUMVERTICES, Cube->GetVerticesSize()), tex_loc, colorLoc, matrix_loc);
+	floor_tile = new Object("models/plane_5unit.obj", incrementIndex(NUMVERTICES, Cube->GetVerticesSize()), tex_loc, nm_tex_loc, colorLoc, matrix_loc);
 	combineVec4Vectors(vertices, floor_tile->GetVertices());
 	combineVec2Vectors(uvs, floor_tile->GetUVs());
 	combineVec4Vectors(normals, floor_tile->GetNormals());
 	floor_tile->SetColorAlpha(0.0, 0.0, 0.0, 0.0);
 	floor_tile->SetTexture(Textures[0]);
+	floor_tile->SetNormalTexture(Textures[4]);
 	
-	Player = new Object("models/cube.obj", incrementIndex(NUMVERTICES, floor_tile->GetVerticesSize()), tex_loc, colorLoc, matrix_loc);
+	Player = new Object("models/cube.obj", incrementIndex(NUMVERTICES, floor_tile->GetVerticesSize()), tex_loc, nm_tex_loc, colorLoc, matrix_loc);
 	combineVec4Vectors(vertices, Player->GetVertices());
 	combineVec2Vectors(uvs, Player->GetUVs());
 	combineVec4Vectors(normals, Player->GetNormals());
 	Player -> SetColor(1.0,0.0,0.0);
+	Player ->SetNormalTexture(Textures[3]);
 
-	StairsUp = new Object("models/StairsUp.obj", incrementIndex(NUMVERTICES, Player->GetVerticesSize()), tex_loc, colorLoc, matrix_loc);
+	StairsUp = new Object("models/StairsUp.obj", incrementIndex(NUMVERTICES, Player->GetVerticesSize()), tex_loc, nm_tex_loc, colorLoc, matrix_loc);
 	combineVec4Vectors(vertices, StairsUp->GetVertices());
 	combineVec2Vectors(uvs, StairsUp->GetUVs());
 	combineVec4Vectors(normals, StairsUp->GetNormals());
 	StairsUp->SetColorAlpha(0.0, 0.0, 0.0, 0.0);
 	StairsUp->SetTexture(Textures[2]);
+	StairsUp->SetNormalTexture(Textures[6]);
 
-	StairsDown = new Object("models/StairsUp.obj", incrementIndex(NUMVERTICES, StairsUp->GetVerticesSize()), tex_loc, colorLoc, matrix_loc);
+	StairsDown = new Object("models/StairsUp.obj", incrementIndex(NUMVERTICES, StairsUp->GetVerticesSize()), tex_loc, nm_tex_loc, colorLoc, matrix_loc);
 	combineVec4Vectors(vertices, StairsDown->GetVertices());
 	combineVec2Vectors(uvs, StairsDown->GetUVs());
 	combineVec4Vectors(normals, StairsDown->GetNormals());
 	StairsDown->SetColorAlpha(0.0, 0.0, 0.0, 0.0);
 	StairsDown->SetTexture(Textures[2]);
+	StairsDown->SetNormalTexture(Textures[3]);
 
 	//default object id, used 
-	PlaceholderObject = new Object("models/cube.obj", incrementIndex(NUMVERTICES, StairsDown->GetVerticesSize()), tex_loc, colorLoc, matrix_loc);
+	PlaceholderObject = new Object("models/cube.obj", incrementIndex(NUMVERTICES, StairsDown->GetVerticesSize()), tex_loc, nm_tex_loc, colorLoc, matrix_loc);
 	combineVec4Vectors(vertices, PlaceholderObject->GetVertices());
 	combineVec2Vectors(uvs, PlaceholderObject->GetUVs());
 	combineVec4Vectors(normals, PlaceholderObject->GetNormals());
 	PlaceholderObject -> SetColor(0.0,0.0,0.5);
+	PlaceholderObject->SetNormalTexture(Textures[3]);
 
 
-	Object1 = new Object("models/cube.obj", incrementIndex(NUMVERTICES, PlaceholderObject->GetVerticesSize()), tex_loc, colorLoc, matrix_loc);
+	Object1 = new Object("models/cube.obj", incrementIndex(NUMVERTICES, PlaceholderObject->GetVerticesSize()), tex_loc, nm_tex_loc, colorLoc, matrix_loc);
 	combineVec4Vectors(vertices, Object1->GetVertices());
 	combineVec2Vectors(uvs, Object1->GetUVs());
 	combineVec4Vectors(normals, Object1->GetNormals());
 	Object1 -> SetColor(0.0,0.3,0.4);
+	Object1->SetNormalTexture(Textures[3]);
 
-	Object2 = new Object("models/cube.obj", incrementIndex(NUMVERTICES,  Object1->GetVerticesSize()), tex_loc, colorLoc, matrix_loc);
+	Object2 = new Object("models/cube.obj", incrementIndex(NUMVERTICES,  Object1->GetVerticesSize()), tex_loc, nm_tex_loc, colorLoc, matrix_loc);
 	combineVec4Vectors(vertices, Object2->GetVertices());
 	combineVec2Vectors(uvs, Object2->GetUVs());
 	combineVec4Vectors(normals, Object2->GetNormals());
 	Object2 -> SetColor(0.0,0.5,0.6);
+	Object2->SetNormalTexture(Textures[3]);
 
-	Object3 = new Object("models/cube.obj", incrementIndex(NUMVERTICES, Object2->GetVerticesSize()), tex_loc, colorLoc, matrix_loc);
+	Object3 = new Object("models/cube.obj", incrementIndex(NUMVERTICES, Object2->GetVerticesSize()), tex_loc, nm_tex_loc, colorLoc, matrix_loc);
 	combineVec4Vectors(vertices, Object3->GetVertices());
 	combineVec2Vectors(uvs, Object3->GetUVs());
 	combineVec4Vectors(normals, Object3->GetNormals());
 	Object3 -> SetColor(0.0,0.7,0.8);
+	Object3->SetNormalTexture(Textures[3]);
 
-	Object4 = new Object("models/cube.obj", incrementIndex(NUMVERTICES, Object3->GetVerticesSize()), tex_loc, colorLoc, matrix_loc);
+	Object4 = new Object("models/cube.obj", incrementIndex(NUMVERTICES, Object3->GetVerticesSize()), tex_loc, nm_tex_loc, colorLoc, matrix_loc);
 	combineVec4Vectors(vertices, Object4->GetVertices());
 	combineVec2Vectors(uvs, Object4->GetUVs());
 	combineVec4Vectors(normals, Object4->GetNormals());
 	Object4 -> SetColor(0.0,0.9,1.0);
+	Object4->SetNormalTexture(Textures[3]);
 
-	Object5 = new Object("models/cube.obj", incrementIndex(NUMVERTICES, Object4->GetVerticesSize()), tex_loc, colorLoc, matrix_loc);
+	Object5 = new Object("models/cube.obj", incrementIndex(NUMVERTICES, Object4->GetVerticesSize()), tex_loc, nm_tex_loc, colorLoc, matrix_loc);
 	combineVec4Vectors(vertices, Object5->GetVertices());
 	combineVec2Vectors(uvs, Object5->GetUVs());
 	combineVec4Vectors(normals, Object5->GetNormals());
 	Object5 -> SetColor(0.0,0.9,1.0);
+	Object5->SetNormalTexture(Textures[3]);
 
-	HostileUnit = new Object("models/cube.obj", incrementIndex(NUMVERTICES, Object5->GetVerticesSize()), tex_loc, colorLoc, matrix_loc);
+	HostileUnit = new Object("models/cube.obj", incrementIndex(NUMVERTICES, Object5->GetVerticesSize()), tex_loc, nm_tex_loc, colorLoc, matrix_loc);
 	combineVec4Vectors(vertices, HostileUnit->GetVertices());
 	combineVec2Vectors(uvs, HostileUnit->GetUVs());combineVec4Vectors(normals, Cube->GetNormals());
 	combineVec4Vectors(normals, HostileUnit->GetNormals());
 	HostileUnit -> SetColor(1.0,1.0,0.0);
+	HostileUnit->SetNormalTexture(Textures[3]);
 }
 
+// Function to grab all the tangents and bitangents for normal
+// calculations
+void getTangents(vector<vec4> &t, vector<vec4> &bt) {
+	for ( int i=0; i<vertices.size(); i+=3){
+
+		// Shortcuts for vertices
+		vec4 &v0 = vertices[i+0];
+		vec4 &v1 = vertices[i+1];
+		vec4 &v2 = vertices[i+2];
+
+		// Shortcuts for UVs
+		vec2 &uv0 = uvs[i+0];
+		vec2 &uv1 = uvs[i+1];
+		vec2 &uv2 = uvs[i+2];
+
+		// Edges of the triangle : postion delta
+		vec4 deltaPos1 = v1-v0;
+		vec4 deltaPos2 = v2-v0;
+
+		// UV delta
+		vec2 deltaUV1 = uv1-uv0;
+		vec2 deltaUV2 = uv2-uv0;
+		// We can now use our formula to compute the tangent and the bitangent :
+
+		float r = 1.0f / (deltaUV1.x * deltaUV2.y - deltaUV1.y * deltaUV2.x);
+		vec4 tangent = (deltaPos1 * deltaUV2.y   - deltaPos2 * deltaUV1.y)*r;
+		vec4 bitangent = (deltaPos2 * deltaUV1.x   - deltaPos1 * deltaUV2.x)*r;
+		// Finally, we fill the *tangents *and *bitangents *buffers. Remember, these buffers are not indexed yet, so each vertex has its own copy.
+
+		// Set the same tangent for all three vertices of the triangle.
+		// They will be merged later, in vboindexer.cpp
+		tangents.push_back(tangent);
+		tangents.push_back(tangent);
+		tangents.push_back(tangent);
+
+		// Same thing for binormals
+		bitangents.push_back(bitangent);
+		bitangents.push_back(bitangent);
+		bitangents.push_back(bitangent);
+
+	}
+
+	for (unsigned int i=0; i<vertices.size(); i+=1 )
+	{
+		vec4 &n = normals[i];
+		vec4 &t = tangents[i];
+		vec4 &b = bitangents[i];
+
+		// Gram-Schmidt orthogonalize
+		t = normalize(t - n * dot(n, t));
+
+		// Calculate handedness
+		if (dot(cross(n, t), b) < 0.0f){
+			t = t * -1.0f;
+		}
+	}
+
+}
 
 void init() {
 
@@ -637,6 +718,8 @@ void init() {
 	loc = glGetAttribLocation(program, "vPosition");
 	uv_loc = glGetAttribLocation(program, "vUV");
 	normal_loc = glGetAttribLocation(program, "vNormal");
+	tangents_loc = glGetAttribLocation(program, "vTangents");
+	bitangents_loc = glGetAttribLocation(program, "vBitangents");
 
 	
 	colorLoc = glGetUniformLocation(program, "vcolor");
@@ -649,10 +732,14 @@ void init() {
 
 	glEnable(GL_TEXTURE_2D);
 
-
 	texID = glGetUniformLocation(program, "diffuse");
 	if(texID == -1) {
 		std::cerr << "Unable to find the texID parameter" << std::endl;
+	}
+
+	normalTexID = glGetUniformLocation(program, "normalTex");
+	if(normalTexID == -1) {
+		std::cerr << "Unable to find the normalTexID parameter" << std::endl;
 	}
 
 	/****************************************************************/
@@ -663,15 +750,16 @@ void init() {
 		std::cerr << "Unable to find lightPositionWorldSpace parameter" << std::endl;
 	}
 
-	light1 = new Object("models/cube.obj", 0, texID, colorLoc, matrix_loc);
-	light1->SetColor(1.0, 1.0, 0.0);
-	light1->Move(vec4(0.0f, 100.0f,0.0f,0.0f));
-
-	lightPos = vec4(0.0f, 100.0f,0.0f, 1.0f);
-	glUniform4f(lightPositionWorldSpaceLoc, lightPos.x, lightPos.y, lightPos.z, lightPos.w);
+	// lightPos = vec4(0.0f, 100.0f,0.0f, 1.0f);
+	// glUniform4f(lightPositionWorldSpaceLoc, lightPos.x, lightPos.y, lightPos.z, lightPos.w);
 	
+	/****************************/
 	// Initialize the objects
-	initObjects(texID, colorLoc, matrix_loc);
+	/****************************/
+	initObjects(texID, normalTexID, colorLoc, matrix_loc);
+	getTangents(tangents, bitangents);
+	/****************************/
+	/****************************/
 
 
 	GLuint vao;
@@ -687,6 +775,8 @@ void init() {
 	glBufferData(GL_ARRAY_BUFFER, vertices.size()*sizeof(vec4)
 								+ uvs.size()*sizeof(vec2)
 								+ normals.size()*sizeof(vec4)
+								+ tangents.size()*sizeof(vec4)
+								+ bitangents.size()*sizeof(vec4)
 								, NULL, GL_STATIC_DRAW);
 
 	// vertices buffer section
@@ -695,10 +785,14 @@ void init() {
 	glBufferSubData(GL_ARRAY_BUFFER, vertices.size()*sizeof(vec4), uvs.size()*sizeof(vec2), &uvs[0][0]);
 	// normals buffer section
 	glBufferSubData(GL_ARRAY_BUFFER, vertices.size()*sizeof(vec4) + uvs.size()*sizeof(vec2), normals.size()*sizeof(vec4), &normals[0][0]);
+	// tangents
+	glBufferSubData(GL_ARRAY_BUFFER, vertices.size()*sizeof(vec4) + uvs.size()*sizeof(vec2) + normals.size()*sizeof(vec4), tangents.size()*sizeof(vec4), &tangents[0][0]);
+	// bitangens
+	glBufferSubData(GL_ARRAY_BUFFER, vertices.size()*sizeof(vec4) + uvs.size()*sizeof(vec2) + normals.size()*sizeof(vec4) + tangents.size()*sizeof(vec4), bitangents.size()*sizeof(vec4), &bitangents[0][0]);
 
+	// attribute buffer for the vertex positions
 	glEnableVertexAttribArray(loc);
 	glVertexAttribPointer(loc, 4, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0));
-
 
 	// attribute buffer for UVs 
 	glEnableVertexAttribArray(uv_loc);
@@ -708,33 +802,13 @@ void init() {
 	glEnableVertexAttribArray(normal_loc);
 	glVertexAttribPointer(normal_loc, 4, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(vertices.size()*sizeof(vec4)+uvs.size()*sizeof(vec2)));
 
-	/***************************************************************
-							Texture Stuff
-	***************************************************************/
+	// attribute buffer for the tangents
+	glEnableVertexAttribArray(tangents_loc);
+	glVertexAttribPointer(tangents_loc, 4, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(vertices.size()*sizeof(vec4)+uvs.size()*sizeof(vec2)+normals.size()*sizeof(vec4)));
 
-	// int width, height, numComponents; // Image properties
-	// unsigned char* image_data = stbi_load("textures/dirt_floor_cartoony.jpg", &width, &height, &numComponents, 4); // Load the image
-
-	// if(image_data == NULL) { // error checking
-	// 	std::cerr << "Texture loading failed for texture: " << "textures/dirt_floor_cartoony.jpg" << std::endl;
-	// }
-
-	// glEnable(GL_TEXTURE_2D);
-	// glGenTextures(1, &texBufferID); // Generate space for the texture
-	// glBindTexture(GL_TEXTURE_2D, texBufferID);
-
-	// glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	// glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	// glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	// glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	
-	// glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image_data);
-	// glActiveTexture(GL_TEXTURE0);
-	// glUniform1i(texID, 0);
-
-	// stbi_image_free(image_data);
-
-	/***************************************************************/
+	// attribute buffer for the bitangents
+	glEnableVertexAttribArray(bitangents_loc);
+	glVertexAttribPointer(bitangents_loc, 4, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(vertices.size()*sizeof(vec4)+uvs.size()*sizeof(vec2)+normals.size()*sizeof(vec4)+tangents.size()*sizeof(vec4)));
 
 	glEnable(GL_DEPTH_TEST);
 	glEnable (GL_BLEND);

@@ -7,7 +7,7 @@
 class Object : public Mesh {
 	public:
 		Object();
-		Object(const char *filename, GLuint nindex, GLuint ntex_loc, GLint ncolorLoc, GLint nmatrix_loc);
+		Object(const char *filename, GLuint nindex, GLuint ntex_loc, GLuint nnormal_tex_loc, GLint ncolorLoc, GLint nmatrix_loc);
 
 		void Move(GLfloat nx, GLfloat ny, GLfloat nz); // point form
 		void Move(vec4 where); // vector form
@@ -20,6 +20,7 @@ class Object : public Mesh {
 
 		// Set Functions
 		void SetTexture(GLuint n_texture);
+		void SetNormalTexture(GLuint n_normal_texture);
 		inline void SetSpeed(GLfloat nspeed) { speed = nspeed; }
 		inline void SetModelView(mat4 m) { ModelView = m; };
 		inline void SetColor(GLfloat nr, GLfloat ng, GLfloat nb) { r = nr; g = ng; b = nb; }
@@ -36,8 +37,10 @@ class Object : public Mesh {
 		// GL Variables
 		GLuint index;
 
-		GLuint m_tex_loc;
 		GLuint m_texture;
+		GLuint m_normal_texture;
+		GLuint m_tex_loc;
+		GLuint m_normal_tex_loc;
 		
 		GLint matrix_loc;
 		GLint colorLoc;
