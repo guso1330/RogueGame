@@ -538,11 +538,11 @@ GLuint loadImage(const std::string& filename) {
 
 void loadTextures() {
 	Textures.push_back(loadImage("textures/cartoon_floor_texture.jpg")); // Textures[0]
-	Textures.push_back(loadImage("textures/stone_brick.jpg")); // Textures[1]
+	Textures.push_back(loadImage("textures/Rock_02_UV_H_CM_1.jpg")); // Textures[1]
 	Textures.push_back(loadImage("textures/wood_plank2.jpg")); // Textures[2]
 	Textures.push_back(loadImage("textures/default_normal.jpg")); // Textures[3] DEFAULT NORMAL
 	Textures.push_back(loadImage("textures/cartoon_floor_texture_nm.png")); // Textures[4] floor NORMAL
-	Textures.push_back(loadImage("textures/stone_brick_nm.png")); // Textures[5] Wall normal
+	Textures.push_back(loadImage("textures/Rock_02_UV_H_CM_1_nm.png")); // Textures[5] Wall normal
 	Textures.push_back(loadImage("textures/wood_plank2_nm.png")); // Textures[6] Stair normal
 }
 

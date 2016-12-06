@@ -1,3 +1,4 @@
 *.o
+output.txt
+./src/GenerationStuff/output.txt
 rogueGame
-*.txt
