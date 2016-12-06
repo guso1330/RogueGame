@@ -111,7 +111,7 @@ void Object::SetTexture(GLuint n_texture) {
 
 void Object::SetNormalTexture(GLuint n_normal_texture) {
 	m_normal_texture = n_normal_texture;
-	glActiveTexture(GL_TEXTURE0);
+	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, m_normal_texture);
-	glUniform1i(m_normal_tex_loc, 0);
+	glUniform1i(m_normal_tex_loc, 1);
 }
