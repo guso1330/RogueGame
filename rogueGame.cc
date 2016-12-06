@@ -541,33 +541,41 @@ GLuint loadImage(const std::string& filename) {
 }
 
 void loadTextures() {
-	Textures.push_back(loadImage("textures/cartoon_floor_texture.jpg")); // Textures[0]
-	Textures.push_back(loadImage("textures/Rock_02_UV_H_CM_1.jpg")); // Textures[1]
-	Textures.push_back(loadImage("textures/wood_plank2.jpg")); // Textures[2]
-	Textures.push_back(loadImage("textures/default_normal.jpg")); // Textures[3] DEFAULT NORMAL
-	Textures.push_back(loadImage("textures/cartoon_floor_texture_nm.png")); // Textures[4] floor NORMAL
-	Textures.push_back(loadImage("textures/Rock_02_UV_H_CM_1_nm.png")); // Textures[5] Wall normal
-	Textures.push_back(loadImage("textures/wood_plank2_nm.png")); // Textures[6] Stair normal
+	Textures.push_back(loadImage("textures/default_normal.jpg")); // Textures[0]
+	
+	// Wall
+	Textures.push_back(loadImage("textures/stone_brick.jpg")); // Textures[1]
+	Textures.push_back(loadImage("textures/stone_brick_nm.png")); // Textures[2]
+	// Floor
+	Textures.push_back(loadImage("textures/cartoon_floor_texture.jpg")); // Textures[3]
+	Textures.push_back(loadImage("textures/cartoon_floor_texture_nm.png")); // Textures[4]
+	// Stairs
+	Textures.push_back(loadImage("textures/wood_plank2.jpg")); // Textures[5]
+	Textures.push_back(loadImage("textures/wood_plank2_nm.png")); // Textures[6]
+
 }
 
 void initObjects(GLuint tex_loc, GLuint nm_tex_loc, GLuint colorLoc, GLint matrix_loc) {
 	//
 	// Build all objects in scene
 	//
+
+	// Wall
 	Cube = new Object("models/cube_5unit_allfaceuvs.obj", 0, tex_loc, nm_tex_loc, colorLoc, matrix_loc);
 	combineVec4Vectors(vertices, Cube->GetVertices());
 	combineVec2Vectors(uvs, Cube->GetUVs());
 	combineVec4Vectors(normals, Cube->GetNormals());
 	Cube->SetColorAlpha(0.0, 0.0, 0.0, 0.0);
 	Cube->SetTexture(Textures[1]);
-	Cube->SetNormalTexture(Textures[5]);
+	Cube->SetNormalTexture(Textures[2]);
 
+	// Floor
 	floor_tile = new Object("models/plane_5unit.obj", incrementIndex(NUMVERTICES, Cube->GetVerticesSize()), tex_loc, nm_tex_loc, colorLoc, matrix_loc);
 	combineVec4Vectors(vertices, floor_tile->GetVertices());
 	combineVec2Vectors(uvs, floor_tile->GetUVs());
 	combineVec4Vectors(normals, floor_tile->GetNormals());
 	floor_tile->SetColorAlpha(0.0, 0.0, 0.0, 0.0);
-	floor_tile->SetTexture(Textures[0]);
+	floor_tile->SetTexture(Textures[3]);
 	floor_tile->SetNormalTexture(Textures[4]);
 	
 	Player = new Object("models/cube.obj", incrementIndex(NUMVERTICES, floor_tile->GetVerticesSize()), tex_loc, nm_tex_loc, colorLoc, matrix_loc);
@@ -582,16 +590,16 @@ void initObjects(GLuint tex_loc, GLuint nm_tex_loc, GLuint colorLoc, GLint matri
 	combineVec2Vectors(uvs, StairsUp->GetUVs());
 	combineVec4Vectors(normals, StairsUp->GetNormals());
 	StairsUp->SetColorAlpha(0.0, 0.0, 0.0, 0.0);
-	StairsUp->SetTexture(Textures[2]);
+	StairsUp->SetTexture(Textures[5]);
 	StairsUp->SetNormalTexture(Textures[6]);
 
-	StairsDown = new Object("models/StairsUp.obj", incrementIndex(NUMVERTICES, StairsUp->GetVerticesSize()), tex_loc, nm_tex_loc, colorLoc, matrix_loc);
+	StairsDown = new Object("models/StairsDown.obj", incrementIndex(NUMVERTICES, StairsUp->GetVerticesSize()), tex_loc, nm_tex_loc, colorLoc, matrix_loc);
 	combineVec4Vectors(vertices, StairsDown->GetVertices());
 	combineVec2Vectors(uvs, StairsDown->GetUVs());
 	combineVec4Vectors(normals, StairsDown->GetNormals());
 	StairsDown->SetColorAlpha(0.0, 0.0, 0.0, 0.0);
-	StairsDown->SetTexture(Textures[2]);
-	StairsDown->SetNormalTexture(Textures[3]);
+	StairsDown->SetTexture(Textures[5]);
+	StairsDown->SetNormalTexture(Textures[6]);
 
 	//default object id, used 
 	PlaceholderObject = new Object("models/cube.obj", incrementIndex(NUMVERTICES, StairsDown->GetVerticesSize()), tex_loc, nm_tex_loc, colorLoc, matrix_loc);
