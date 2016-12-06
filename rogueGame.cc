@@ -552,6 +552,12 @@ void loadTextures() {
 	// Stairs
 	Textures.push_back(loadImage("textures/wood_plank2.jpg")); // Textures[5]
 	Textures.push_back(loadImage("textures/wood_plank2_nm.png")); // Textures[6]
+	// Fire
+	Textures.push_back(loadImage("textures/fire_texture.jpg")); // Textures[7]
+	Textures.push_back(loadImage("textures/fire_texture_nm.png")); // Textures[8]
+
+	Textures.push_back(loadImage("textures/urn_texture.jpg")); // Textures[9]
+	Textures.push_back(loadImage("textures/urn_texture_nm.png")); // Textures[10]
 
 }
 
@@ -609,22 +615,26 @@ void initObjects(GLuint tex_loc, GLuint nm_tex_loc, GLuint colorLoc, GLint matri
 	PlaceholderObject -> SetColor(0.0,0.0,0.5);
 	PlaceholderObject->SetNormalTexture(Textures[3]);
 
-
+	// Fire
 	Object1 = new Object("models/fire.obj", incrementIndex(NUMVERTICES, PlaceholderObject->GetVerticesSize()), tex_loc, nm_tex_loc, colorLoc, matrix_loc);
 	combineVec4Vectors(vertices, Object1->GetVertices());
 	combineVec2Vectors(uvs, Object1->GetUVs());
 	combineVec4Vectors(normals, Object1->GetNormals());
-	Object1 -> SetColor(0.0,0.3,0.4);
-	Object1->SetNormalTexture(Textures[3]);
+	Object1 -> SetColorAlpha(0.0, 0.0, 0.0, 0.0);
+	Object1->SetTexture(Textures[7]);
+	Object1->SetNormalTexture(Textures[8]);
 
 	Object2 = new Object("models/urns.obj", incrementIndex(NUMVERTICES,  Object1->GetVerticesSize()), tex_loc, nm_tex_loc, colorLoc, matrix_loc);
 	combineVec4Vectors(vertices, Object2->GetVertices());
 	combineVec2Vectors(uvs, Object2->GetUVs());
 	combineVec4Vectors(normals, Object2->GetNormals());
-	Object2 -> SetColor(0.0,0.5,0.6);
-	Object2->SetNormalTexture(Textures[3]);
+	Object2 ->SetColorAlpha(0.0, 0.0, 0.0, 0.0);
+	Object2->SetTexture(Textures[9]);
+	Object2->SetNormalTexture(Textures[10]);
 
+	//
 	// WARNING: THERE IS AN ISSUE WITH THE ROCK MODEL
+	//
 	// I've marked rocks as green
 	Object3 = new Object("models/urns.obj", incrementIndex(NUMVERTICES, Object2->GetVerticesSize()), tex_loc, nm_tex_loc, colorLoc, matrix_loc);
 	combineVec4Vectors(vertices, Object3->GetVertices());
