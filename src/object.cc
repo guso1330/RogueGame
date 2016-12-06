@@ -82,6 +82,8 @@ void Object::DrawSolid()
 	// Setting the ModelView matrix
 	glUniformMatrix4fv(matrix_loc, 1, GL_TRUE, ModelView);
 
+	glEnable(GL_TEXTURE_2D);
+
 	// Send the regular texture
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, m_texture);
