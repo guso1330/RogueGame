@@ -232,6 +232,7 @@ void Floor::place_room_spawners()
 		}
 		//std::cout << "Room #" << room_counter << " placed at ("
 		//<< room_x << "," << room_y << "). " << std::endl;
+		cout << "235" << endl;
 		floor_map[room_x][room_y].set_block_id(1); 
 		//std::cout << "floor_map[" << room_x << "][" << room_y << "] set to spawner block." << std::endl;
 		generate_room(room_x, room_y);

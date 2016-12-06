@@ -23,8 +23,8 @@
 # last-modified: Mon Sep 17 15:17:00 2012
 
 # Assumes the following file exists in the proper place.
-include /home/cyrus/Documents/code-egs/Makefile.defs
-# include /home/guso/Documents/cs4250/code-egs/Makefile.defs
+# include /home/cyrus/Documents/code-egs/Makefile.defs
+include /home/guso/Documents/cs4250/code-egs/Makefile.defs
 
 
 # The first item in the file is what will be made if you just type
