@@ -602,35 +602,37 @@ void initObjects(GLuint tex_loc, GLuint nm_tex_loc, GLuint colorLoc, GLint matri
 	PlaceholderObject->SetNormalTexture(Textures[3]);
 
 
-	Object1 = new Object("models/cube.obj", incrementIndex(NUMVERTICES, PlaceholderObject->GetVerticesSize()), tex_loc, nm_tex_loc, colorLoc, matrix_loc);
+	Object1 = new Object("models/fire.obj", incrementIndex(NUMVERTICES, PlaceholderObject->GetVerticesSize()), tex_loc, nm_tex_loc, colorLoc, matrix_loc);
 	combineVec4Vectors(vertices, Object1->GetVertices());
 	combineVec2Vectors(uvs, Object1->GetUVs());
 	combineVec4Vectors(normals, Object1->GetNormals());
 	Object1 -> SetColor(0.0,0.3,0.4);
 	Object1->SetNormalTexture(Textures[3]);
 
-	Object2 = new Object("models/cube.obj", incrementIndex(NUMVERTICES,  Object1->GetVerticesSize()), tex_loc, nm_tex_loc, colorLoc, matrix_loc);
+	Object2 = new Object("models/urns.obj", incrementIndex(NUMVERTICES,  Object1->GetVerticesSize()), tex_loc, nm_tex_loc, colorLoc, matrix_loc);
 	combineVec4Vectors(vertices, Object2->GetVertices());
 	combineVec2Vectors(uvs, Object2->GetUVs());
 	combineVec4Vectors(normals, Object2->GetNormals());
 	Object2 -> SetColor(0.0,0.5,0.6);
 	Object2->SetNormalTexture(Textures[3]);
 
-	Object3 = new Object("models/cube.obj", incrementIndex(NUMVERTICES, Object2->GetVerticesSize()), tex_loc, nm_tex_loc, colorLoc, matrix_loc);
+	// WARNING: THERE IS AN ISSUE WITH THE ROCK MODEL
+	// I've marked rocks as green
+	Object3 = new Object("models/urns.obj", incrementIndex(NUMVERTICES, Object2->GetVerticesSize()), tex_loc, nm_tex_loc, colorLoc, matrix_loc);
 	combineVec4Vectors(vertices, Object3->GetVertices());
 	combineVec2Vectors(uvs, Object3->GetUVs());
 	combineVec4Vectors(normals, Object3->GetNormals());
-	Object3 -> SetColor(0.0,0.7,0.8);
+	Object3 -> SetColor(0.0,0.7,0.0);
 	Object3->SetNormalTexture(Textures[3]);
 
-	Object4 = new Object("models/cube.obj", incrementIndex(NUMVERTICES, Object3->GetVerticesSize()), tex_loc, nm_tex_loc, colorLoc, matrix_loc);
+	Object4 = new Object("models/sword.obj", incrementIndex(NUMVERTICES, Object3->GetVerticesSize()), tex_loc, nm_tex_loc, colorLoc, matrix_loc);
 	combineVec4Vectors(vertices, Object4->GetVertices());
 	combineVec2Vectors(uvs, Object4->GetUVs());
 	combineVec4Vectors(normals, Object4->GetNormals());
 	Object4 -> SetColor(0.0,0.9,1.0);
 	Object4->SetNormalTexture(Textures[3]);
 
-	Object5 = new Object("models/cube.obj", incrementIndex(NUMVERTICES, Object4->GetVerticesSize()), tex_loc, nm_tex_loc, colorLoc, matrix_loc);
+	Object5 = new Object("models/table.obj", incrementIndex(NUMVERTICES, Object4->GetVerticesSize()), tex_loc, nm_tex_loc, colorLoc, matrix_loc);
 	combineVec4Vectors(vertices, Object5->GetVertices());
 	combineVec2Vectors(uvs, Object5->GetUVs());
 	combineVec4Vectors(normals, Object5->GetNormals());
