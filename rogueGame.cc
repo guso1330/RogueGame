@@ -351,12 +351,42 @@ bool checkCol(int toCheck)
 		makeNextFloor();
 	}
 
+
+
 	std:: cout << "toCheck = " << toCheck << std::endl;
 	if(toCheck != 0) //if its a floor tile
 		return true; //can move
 	return false;
 }
 
+// Collision function for enemies
+bool checkCol(block toCheck, int x, int z)
+{
+
+	if(toCheck.get_block_id() != 0) {
+		if(x == playerX && z == playerZ)
+			exit(0);
+		return true;
+	}//if its a floor tile
+	return false;
+}
+
+bool playerCheckCol(block toCheck)
+{
+	if(toCheck.get_block_id() == 11)
+		makeNextFloor();
+
+	if(toCheck.get_block_id() != 0) {
+		//if(x == playerX && z == playerZ)
+			//exit(0);
+		//if player moves onto a block with an enemy on it
+		if(toCheck.get_has_hostile() == 1)
+			exit(0);
+		return true;
+	}//if its a floor tile
+	return false;
+
+}
 void process_hostile_moves()
 {
 	std::cout << "Process all hostile unit movement." << std::endl;
@@ -371,6 +401,15 @@ void process_hostile_moves()
 			
 		}
 	}*/
+
+
+		//process hostile collision 
+	int num_hostiles = lvl_floor.hostile_unit_pos.size();
+	for(int i = 0; i < num_hostiles; ++i)
+	{
+
+	}	
+
 }
 
 void process_move(int &player_x, int &player_z) {
@@ -393,7 +432,7 @@ extern "C" void SpecialKeys(int key, int x, int y)
 			{
 				case GLUT_KEY_UP:
 					std:: cout << "Move player up. " << std::endl;
-					if(checkCol(lvl_floor.floor_map[playerZ][playerX - 1].get_block_id())){
+					if(playerCheckCol(lvl_floor.floor_map[playerZ][playerX - 1])) {
 						playerX -= 1;
 						Player->ChangeGoal(playerPos.x - 5.0, 0.5, playerPos.z);
 						process_move(playerX, playerZ);
@@ -402,7 +441,7 @@ extern "C" void SpecialKeys(int key, int x, int y)
 					break;
 				case GLUT_KEY_LEFT:
 					std:: cout << "Move player left. " << std::endl;
-					if(checkCol(lvl_floor.floor_map[playerZ + 1][playerX].get_block_id())) {
+					if(playerCheckCol(lvl_floor.floor_map[playerZ + 1][playerX])) {
 						playerZ += 1;
 						Player->ChangeGoal(playerPos.x, 0.5, playerPos.z + 5.0);
 						process_move(playerX, playerZ);
@@ -411,7 +450,7 @@ extern "C" void SpecialKeys(int key, int x, int y)
 					break;
 				case GLUT_KEY_RIGHT:
 					std:: cout << "Move player right. " << std::endl;
-					if(checkCol(lvl_floor.floor_map[playerZ - 1][playerX].get_block_id())) {
+					if(playerCheckCol(lvl_floor.floor_map[playerZ - 1][playerX])) {
 						playerZ -= 1;
 						Player->ChangeGoal(playerPos.x, 0.5, playerPos.z - 5.0);
 						process_move(playerX, playerZ);
@@ -420,7 +459,7 @@ extern "C" void SpecialKeys(int key, int x, int y)
 					break;
 				case GLUT_KEY_DOWN:
 					std:: cout << "Move player down. " << std::endl;
-					if(checkCol(lvl_floor.floor_map[playerZ][playerX +1].get_block_id())) {
+					if(playerCheckCol(lvl_floor.floor_map[playerZ][playerX + 1])) {
 						playerX += 1;
 						Player->ChangeGoal(playerPos.x + 5.0, 0.5, playerPos.z);
 						process_move(playerX, playerZ);
