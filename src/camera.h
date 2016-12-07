@@ -18,11 +18,15 @@ struct Camera {
 		inline void SetProjection(mat4 nprojection) { projection = nprojection; }
 		inline void SetPos(vec4 npos) { pos = npos; }
 		inline void SetDir(vec4 ndir) { dir = ndir; }
+		inline void SetLookAt(mat4 m) { lookat = m; }
 		inline void SetYaw(float angle) { yaw = angle; }
 		inline void SetPitch(float angle) { pitch = angle; }
 		inline void SetDirToForward() { dir = forward; }
+
+		// Get functions
 		inline vec4 GetPos() { return pos; }
 		inline vec4 GetDir() { return dir; }
+		inline vec4 GetUp() { return up; }
 		inline float GetYaw() { return yaw; }
 
 	private:
@@ -32,6 +36,7 @@ struct Camera {
 		vec4 up;
 
 		vec4 dir;
+		mat4 lookat;
 		float yaw, pitch;
 		float strafe_x, strafe_z; // Always gonna be 90 degrees to the direction vector
 };

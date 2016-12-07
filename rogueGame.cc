@@ -204,7 +204,7 @@ extern "C" void display() {
 	glUniformMatrix4fv(matrix_loc, 1, GL_TRUE, model_view);
 	glUniformMatrix4fv(projection_loc, 1, GL_TRUE, projection);
 	ControlCamera(camera, key, camera_speed, camera_rotate_speed);
-	camera.Update();
+	cout << "camera yaw: " << camera.GetYaw() << endl;
 
 	// // UPDATE THE LIGHT POSITION BASED ON THE PLAYER POS
 	// light1->DrawSolid();
@@ -226,11 +226,11 @@ extern "C" void display() {
 			StairsUp ->Move(fx, 0.0, fz);
 			StairsDown ->Move(fx, -5.0, fz);
 			PlaceholderObject ->Move(fx, 0.5, fz);
-			Object1->Move(fx, 0.5, fz);
-			Object2->Move(fx, 0.5, fz);
-			Object3->Move(fx, 0.5, fz);
-			Object4->Move(fx, 0.5, fz);
-			Object5->Move(fx, 0.5, fz);
+			Object1->Move(fx, 0.0, fz);
+			Object2->Move(fx, 0.0, fz);
+			Object3->Move(fx, 0.0, fz);
+			Object4->Move(fx, 0.0, fz);
+			Object5->Move(fx, 0.0, fz);
 			HostileUnit->Move(fx, 0.5, fz);
 			block t_block = lvl_floor.floor_map[i][j];
 			if((t_block.get_block_id() == 3 || t_block.get_block_id() == 1) && t_block.is_found == 1) {
@@ -376,9 +376,7 @@ void process_move(int &player_x, int &player_z) {
 
 extern "C" void SpecialKeys(int key, int x, int y)
 {
-	if(key == GLUT_KEY_UP || key == GLUT_KEY_DOWN || key == GLUT_KEY_RIGHT || key == GLUT_KEY_LEFT) {
-		sound.PlaySound("sounds/footsteps.wav");
-	}
+	vec4 cameraPos = camera.GetPos();
 	switch(key)
 	{
 		case GLUT_KEY_UP:
@@ -387,7 +385,6 @@ extern "C" void SpecialKeys(int key, int x, int y)
 				playerX -= 1;
 				process_move(playerX, playerZ);
 			}
-			camera.SetPos(vec4(playerX*5 +15.0f, 45.0f, playerZ*5, 0.0f));
 			std:: cout << "Player at : " << playerX << "," << playerZ << std:: endl;
 			break;
 		case GLUT_KEY_LEFT:
@@ -396,7 +393,6 @@ extern "C" void SpecialKeys(int key, int x, int y)
 				playerZ += 1;
 				process_move(playerX, playerZ);
 			}
-			camera.SetPos(vec4(playerX*5 +15.0f, 45.0f, playerZ*5, 0.0f));
 			std:: cout << "Player at : " << playerX << "," << playerZ << std:: endl;
 			break;
 		case GLUT_KEY_RIGHT:
@@ -405,7 +401,6 @@ extern "C" void SpecialKeys(int key, int x, int y)
 				playerZ -= 1;
 				process_move(playerX, playerZ);
 			}
-			camera.SetPos(vec4(playerX*5 +15.0f, 45.0f, playerZ*5, 0.0f));
 			std:: cout << "Player at : " << playerX << "," << playerZ << std:: endl;
 			break;
 		case GLUT_KEY_DOWN:
@@ -414,9 +409,12 @@ extern "C" void SpecialKeys(int key, int x, int y)
 				playerX += 1;
 				process_move(playerX, playerZ);
 			}
-			camera.SetPos(vec4(playerX*5 +15.0f, 45.0f, playerZ*5, 0.0f));
 			std:: cout << "Player at : " << playerX << "," << playerZ << std:: endl;
 			break;	
+	}
+	if(key == GLUT_KEY_UP || key == GLUT_KEY_DOWN || key == GLUT_KEY_RIGHT || key == GLUT_KEY_LEFT) {
+		sound.PlaySound("sounds/footsteps.wav");
+		camera.SetPos(vec4(playerX*5 + 15.0, cameraPos.y, playerZ*5, 0.0f));
 	}
 
 	glutPostRedisplay();
@@ -464,6 +462,8 @@ extern "C" void mouse(int button, int state, int x, int y)
 
 extern "C" void idle()
 {
+	Player.Update();
+	camera.Update();
 	glutPostRedisplay();
 }
 
@@ -559,6 +559,15 @@ void loadTextures() {
 	Textures.push_back(loadImage("textures/urn_texture.jpg")); // Textures[9]
 	Textures.push_back(loadImage("textures/urn_texture_nm.png")); // Textures[10]
 
+	Textures.push_back(loadImage("textures/rock1_texture.jpg")); // Textures[11]
+	Textures.push_back(loadImage("textures/rock1_texture_nm.png")); // Textures[12]
+
+	Textures.push_back(loadImage("textures/sword_texture.jpg")); // Textures[13]
+	Textures.push_back(loadImage("textures/sword_texture_nm.png")); // Textures[14]
+
+	Textures.push_back(loadImage("textures/table_texture.jpg")); // Textures[15]
+	Textures.push_back(loadImage("textures/table_texture_nm.png")); // Textures[16]
+
 }
 
 void initObjects(GLuint tex_loc, GLuint nm_tex_loc, GLuint colorLoc, GLint matrix_loc) {
@@ -633,29 +642,32 @@ void initObjects(GLuint tex_loc, GLuint nm_tex_loc, GLuint colorLoc, GLint matri
 	Object2->SetNormalTexture(Textures[10]);
 
 	//
-	// WARNING: THERE IS AN ISSUE WITH THE ROCK MODEL
+	// WARNING: THERE IS AN ISSUE WITH THE MULTIPLE ROCK MODEL (rocks.obj)
 	//
 	// I've marked rocks as green
-	Object3 = new Object("models/urns.obj", incrementIndex(NUMVERTICES, Object2->GetVerticesSize()), tex_loc, nm_tex_loc, colorLoc, matrix_loc);
+	Object3 = new Object("models/rock1.obj", incrementIndex(NUMVERTICES, Object2->GetVerticesSize()), tex_loc, nm_tex_loc, colorLoc, matrix_loc);
 	combineVec4Vectors(vertices, Object3->GetVertices());
 	combineVec2Vectors(uvs, Object3->GetUVs());
 	combineVec4Vectors(normals, Object3->GetNormals());
-	Object3 -> SetColor(0.0,0.7,0.0);
-	Object3->SetNormalTexture(Textures[3]);
+	Object3->SetColorAlpha(0.0, 0.0, 0.0, 0.0);
+	Object3->SetTexture(Textures[11]);
+	Object3->SetNormalTexture(Textures[12]);
 
 	Object4 = new Object("models/sword.obj", incrementIndex(NUMVERTICES, Object3->GetVerticesSize()), tex_loc, nm_tex_loc, colorLoc, matrix_loc);
 	combineVec4Vectors(vertices, Object4->GetVertices());
 	combineVec2Vectors(uvs, Object4->GetUVs());
 	combineVec4Vectors(normals, Object4->GetNormals());
-	Object4 -> SetColor(0.0,0.9,1.0);
-	Object4->SetNormalTexture(Textures[3]);
+	Object4 ->SetColorAlpha(0.0, 0.0, 0.0, 0.0);
+	Object4->SetTexture(Textures[13]);
+	Object4->SetNormalTexture(Textures[14]);
 
 	Object5 = new Object("models/table.obj", incrementIndex(NUMVERTICES, Object4->GetVerticesSize()), tex_loc, nm_tex_loc, colorLoc, matrix_loc);
 	combineVec4Vectors(vertices, Object5->GetVertices());
 	combineVec2Vectors(uvs, Object5->GetUVs());
 	combineVec4Vectors(normals, Object5->GetNormals());
-	Object5 -> SetColor(0.0,0.9,1.0);
-	Object5->SetNormalTexture(Textures[3]);
+	Object5->SetColorAlpha(0.0, 0.0, 0.0, 0.0);
+	Object5->SetTexture(Textures[15]);
+	Object5->SetNormalTexture(Textures[16]);
 
 	HostileUnit = new Object("models/cube.obj", incrementIndex(NUMVERTICES, Object5->GetVerticesSize()), tex_loc, nm_tex_loc, colorLoc, matrix_loc);
 	combineVec4Vectors(vertices, HostileUnit->GetVertices());
@@ -841,8 +853,8 @@ void init() {
 	glEnable(GL_CULL_FACE);
 
 	camera.SetPos(vec4(playerX*5 +15.0f, 45.0f, playerZ*5, 0.0f));
-	camera.SetDir(vec4(0.0,0.0,1.0,0.0));
-	camera.SetDirToForward();
+	camera.SetYaw(4.66875);
+	// camera.SetDirToForward();
 }
 
 int main(int argc, char **argv) {
@@ -855,10 +867,8 @@ int main(int argc, char **argv) {
 	glewInit();
 
 	// Initializes the buffers and vao
-	initSound();
 	init();
-
-	glEnable(GL_DEPTH_TEST);
+	initSound();
 
 	glutMainLoop(); // enter event loop
 

@@ -7,10 +7,11 @@ Camera::Camera(const vec4 &pos, float fov, float aspect, float near, float far) 
 	this->forward = this->dir = vec4(0.0f, 0.0f, 1.0f, 0.0f);
 	this->up = vec4(0.0f, 1.0f, 0.0f, 0.0f);
 	this->projection = Perspective(fov, aspect, near, far);
+	this->lookat = LookAt(pos, pos+dir, up);
 	yaw = pitch = 0.0;
 }
 
-mat4 Camera::GetViewProjection() const { 
+mat4 Camera::GetViewProjection() const {
 	return projection * LookAt(pos, pos+dir, up);
 }
 
