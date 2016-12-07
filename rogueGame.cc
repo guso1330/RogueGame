@@ -387,6 +387,37 @@ bool playerCheckCol(block toCheck)
 	return false;
 
 }
+
+
+
+
+void makeMove(int &x, int &z)
+{
+	int seed = rand() % 4; 
+
+	switch(seed)
+	{
+		case 0:
+			x = 0;
+			z = 1;
+		break;
+		case 1:
+			x = 1;
+			z = 0;
+		break;
+		case 2:
+			x = -1; 
+			z = 0;
+		break;
+		case 3:
+			x = 0;
+			z = -1;
+		break;
+	}
+
+
+}
+
 void process_hostile_moves()
 {
 	std::cout << "Process all hostile unit movement." << std::endl;
@@ -405,9 +436,15 @@ void process_hostile_moves()
 
 		//process hostile collision 
 	int num_hostiles = lvl_floor.hostile_unit_pos.size();
+	int move_x, move_z; 
+
 	for(int i = 0; i < num_hostiles; ++i)
 	{
-
+		makeMove(move_x, move_z);
+		if(checkCol(lvl_floor.floor_map[lvl_floor.hostile_unit_pos[i].y_coord + move_z][lvl_floor.hostile_unit_pos[i].x_coord + move_x],move_x,move_z))
+		{
+			lvl_floor.move_enemy(lvl_floor.hostile_unit_pos[i].x_coord + move_x, lvl_floor.hostile_unit_pos[i].y_coord + move_z, i);
+		}
 	}	
 
 }

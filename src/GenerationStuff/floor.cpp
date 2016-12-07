@@ -365,7 +365,7 @@ void Floor::generate_stairs()
 void Floor::move_enemy(int new_x, int new_y, int hostile_index)
 {
 	//set old pos to empty, set new one to 1;
-	/*std:: cout << "In move_enemy for index = " << hostile_index << std::endl;
+	std:: cout << "In move_enemy for index = " << hostile_index << std::endl;
 	int at_x;
 	int at_y; 
 	at_x = hostile_unit_pos[hostile_index].x_coord;
@@ -375,5 +375,8 @@ void Floor::move_enemy(int new_x, int new_y, int hostile_index)
 	floor_map[at_x][at_y].set_has_hostile(0);
 	cout << "enemy at " << at_x <<" , " << at_y << " = " << floor_map[at_x][at_y].get_has_hostile() << std:: endl;
 	floor_map[new_x][new_y].set_has_hostile(1); 
-	cout << "enemy at " << new_x <<" , " << new_y << " = " << floor_map[new_x][new_y].get_has_hostile() << std:: endl;*/
+	cout << "enemy at " << new_x <<" , " << new_y << " = " << floor_map[new_x][new_y].get_has_hostile() << std:: endl;
+
+	hostile_unit_pos[hostile_index].x_coord = new_x;
+	hostile_unit_pos[hostile_index].y_coord = new_y; 
 }
