@@ -204,15 +204,21 @@ extern "C" void display() {
 	glUniformMatrix4fv(matrix_loc, 1, GL_TRUE, model_view);
 	glUniformMatrix4fv(projection_loc, 1, GL_TRUE, projection);
 	ControlCamera(camera, key, camera_speed, camera_rotate_speed);
-	cout << "camera yaw: " << camera.GetYaw() << endl;
+	camera.Update();
 
-	// // UPDATE THE LIGHT POSITION BASED ON THE PLAYER POS
-	// light1->DrawSolid();
+	// UPDATE THE LIGHT & CAMERA POSITION BASED ON THE PLAYER POS
 	vec3 PlayerPos = Player->GetPos();
+	vec3 PlayerGoal = Player->GetGoal();
 	lightPos.x=PlayerPos.x;
 	lightPos.y=PlayerPos.y+7.0f;
 	lightPos.z=PlayerPos.z;
 	glUniform4f(lightPositionWorldSpaceLoc, lightPos.x, lightPos.y, lightPos.z, 0.0);
+
+	if((PlayerGoal.x != PlayerPos.x) && (PlayerGoal.z != PlayerPos.z)) {
+		camera.SetPos(vec4(PlayerPos.x + 15.0, camera.GetPos().y, PlayerPos.z, 0.0f));
+	}
+
+	Player->DrawSolid();
 
 	//
 	// DRAWING
@@ -222,7 +228,7 @@ extern "C" void display() {
 		for(int j=0; j < lvl_floor.floor_map[i].size(); ++j) {
 			Cube->Move(fx, 0.0, fz);
 			floor_tile->Move(fx, 0.0, fz);
-			Player ->Move(playerX*5,0.5,playerZ*5);
+			// Player ->Move(playerX*5,0.5,playerZ*5);
 			StairsUp ->Move(fx, 0.0, fz);
 			StairsDown ->Move(fx, -5.0, fz);
 			PlaceholderObject ->Move(fx, 0.5, fz);
@@ -261,7 +267,7 @@ extern "C" void display() {
 				StairsUp -> DrawSolid();
 				//Entry Stairs
 				//Places player, may need to tweek later to move. 
-				Player -> DrawSolid();
+				// Player->DrawSolid();
 				if(player_placed == false)
 				{
 					//Get starting pos for player.
@@ -269,12 +275,13 @@ extern "C" void display() {
 					playerZ = fz/5;
 					playerX = abs(playerX);
 					playerZ = abs(playerZ);
+					Player->Move(playerX*5, 0.0, playerZ*5);
 					std:: cout << "Player placed at: " << playerX << "," << playerZ << std::endl;
 					player_placed = true;
 					camera.SetPos(vec4(playerX*5 +15.0f, 45.0f, playerZ*5, 0.0f));
 					updateCluster(playerX,playerZ);
 					camera.SetPitch(-45.0);
-					camera.Rotate(90);
+					// camera.Rotate(90);
 				}
 			} else if (t_block.get_block_id() == 11 && t_block.is_found == 1) {
 				//Exit Stairs
@@ -377,44 +384,54 @@ void process_move(int &player_x, int &player_z) {
 extern "C" void SpecialKeys(int key, int x, int y)
 {
 	vec4 cameraPos = camera.GetPos();
-	switch(key)
-	{
-		case GLUT_KEY_UP:
-			std:: cout << "Move player up. " << std::endl;
-			if(checkCol(lvl_floor.floor_map[playerZ][playerX - 1].get_block_id())){
-				playerX -= 1;
-				process_move(playerX, playerZ);
+	vec4 playerPos = Player->GetPos();
+	vec3 playerGoal = Player->GetGoal();
+
+	// Limit the player's movement until they have reached their goal
+	if((playerGoal.x == playerPos.x) && (playerGoal.z == playerPos.z)) {
+		switch(key)
+			{
+				case GLUT_KEY_UP:
+					std:: cout << "Move player up. " << std::endl;
+					if(checkCol(lvl_floor.floor_map[playerZ][playerX - 1].get_block_id())){
+						playerX -= 1;
+						Player->ChangeGoal(playerPos.x - 5.0, 0.5, playerPos.z);
+						process_move(playerX, playerZ);
+					}
+					std:: cout << "Player at : " << playerX << "," << playerZ << std:: endl;
+					break;
+				case GLUT_KEY_LEFT:
+					std:: cout << "Move player left. " << std::endl;
+					if(checkCol(lvl_floor.floor_map[playerZ + 1][playerX].get_block_id())) {
+						playerZ += 1;
+						Player->ChangeGoal(playerPos.x, 0.5, playerPos.z + 5.0);
+						process_move(playerX, playerZ);
+					}
+					std:: cout << "Player at : " << playerX << "," << playerZ << std:: endl;
+					break;
+				case GLUT_KEY_RIGHT:
+					std:: cout << "Move player right. " << std::endl;
+					if(checkCol(lvl_floor.floor_map[playerZ - 1][playerX].get_block_id())) {
+						playerZ -= 1;
+						Player->ChangeGoal(playerPos.x, 0.5, playerPos.z - 5.0);
+						process_move(playerX, playerZ);
+					}
+					std:: cout << "Player at : " << playerX << "," << playerZ << std:: endl;
+					break;
+				case GLUT_KEY_DOWN:
+					std:: cout << "Move player down. " << std::endl;
+					if(checkCol(lvl_floor.floor_map[playerZ][playerX +1].get_block_id())) {
+						playerX += 1;
+						Player->ChangeGoal(playerPos.x + 5.0, 0.5, playerPos.z);
+						process_move(playerX, playerZ);
+					}
+					std:: cout << "Player at : " << playerX << "," << playerZ << std:: endl;
+					break;	
 			}
-			std:: cout << "Player at : " << playerX << "," << playerZ << std:: endl;
-			break;
-		case GLUT_KEY_LEFT:
-			std:: cout << "Move player left. " << std::endl;
-			if(checkCol(lvl_floor.floor_map[playerZ + 1][playerX].get_block_id())) {
-				playerZ += 1;
-				process_move(playerX, playerZ);
-			}
-			std:: cout << "Player at : " << playerX << "," << playerZ << std:: endl;
-			break;
-		case GLUT_KEY_RIGHT:
-			std:: cout << "Move player right. " << std::endl;
-			if(checkCol(lvl_floor.floor_map[playerZ - 1][playerX].get_block_id())) {
-				playerZ -= 1;
-				process_move(playerX, playerZ);
-			}
-			std:: cout << "Player at : " << playerX << "," << playerZ << std:: endl;
-			break;
-		case GLUT_KEY_DOWN:
-			std:: cout << "Move player down. " << std::endl;
-			if(checkCol(lvl_floor.floor_map[playerZ][playerX +1].get_block_id())) {
-				playerX += 1;
-				process_move(playerX, playerZ);
-			}
-			std:: cout << "Player at : " << playerX << "," << playerZ << std:: endl;
-			break;	
-	}
-	if(key == GLUT_KEY_UP || key == GLUT_KEY_DOWN || key == GLUT_KEY_RIGHT || key == GLUT_KEY_LEFT) {
-		sound.PlaySound("sounds/footsteps.wav");
-		camera.SetPos(vec4(playerX*5 + 15.0, cameraPos.y, playerZ*5, 0.0f));
+		if(key == GLUT_KEY_UP || key == GLUT_KEY_DOWN || key == GLUT_KEY_RIGHT || key == GLUT_KEY_LEFT) {
+			sound.PlaySound("sounds/footsteps.wav");
+			camera.SetPos(vec4(playerPos.x + 15.0, camera.GetPos().y, playerPos.z, 0.0f));
+		}
 	}
 
 	glutPostRedisplay();
@@ -463,7 +480,6 @@ extern "C" void mouse(int button, int state, int x, int y)
 extern "C" void idle()
 {
 	Player->Update();
-	camera.Update();
 	glutPostRedisplay();
 }
 
@@ -597,6 +613,7 @@ void initObjects(GLuint tex_loc, GLuint nm_tex_loc, GLuint colorLoc, GLint matri
 	combineVec4Vectors(vertices, Player->GetVertices());
 	combineVec2Vectors(uvs, Player->GetUVs());
 	combineVec4Vectors(normals, Player->GetNormals());
+	Player->SetSpeed(0.04);
 	Player -> SetColor(1.0,0.0,0.0);
 	Player ->SetNormalTexture(Textures[3]);
 

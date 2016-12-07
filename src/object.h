@@ -12,7 +12,7 @@ class Object : public Mesh {
 		void Move(GLfloat nx, GLfloat ny, GLfloat nz); // point form
 		void Move(vec4 where); // vector form
 		void Rotate(int axis, GLfloat theta);
-		void ChangeGoal(GLfloat nx, GLfloat ny, GLfloat nz);
+		void ChangeGoal(GLfloat nx, GLfloat ny, GLfloat nz) { goal_x = nx; goal_y = ny; goal_z = nz; }
 		void ChangeGoal(vec3 npos);
 		void Update();
 		void DrawSolid();
@@ -28,6 +28,7 @@ class Object : public Mesh {
 
 		// Get Functions
 		inline vec3 GetPos() const { return vec3(x, y, z); }
+		inline vec3 GetGoal() const { return vec3(goal_x, goal_y, goal_z); }
 		inline GLuint GetIndex() const { return index; }
 		inline GLfloat GetSpeed() const { return speed; }
 
