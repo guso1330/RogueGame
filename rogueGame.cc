@@ -462,7 +462,7 @@ extern "C" void mouse(int button, int state, int x, int y)
 
 extern "C" void idle()
 {
-	Player.Update();
+	Player->Update();
 	camera.Update();
 	glutPostRedisplay();
 }
